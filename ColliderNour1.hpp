@@ -30,7 +30,7 @@ class Collider
         Collider(Collider const& autre);
         Collider& operator=(Collider& x);
         Vec2d directionTo(Vec2d to);
-
+        Vec2d directionTo(Collider);
     private:
         Vec2d Centre;
         double Rayon;
