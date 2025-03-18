@@ -33,5 +33,5 @@ class Collider
 
     private:
         Vec2d Centre;
-        double Rayon;
+        double R;
 };
