@@ -60,4 +60,11 @@ Collider::Collider(Vec2d centre, double rayon){
 
 
     };
+    Vec2d directionTo(Collider to){
+        double x(to.operator[](0),y(to.operator[](1));
+        x=Center.operator[](0)-x;
+        y=Center.operator[](1)-y;
+        Vec2d retour(x,y);
+        return retour;
+    }
 
