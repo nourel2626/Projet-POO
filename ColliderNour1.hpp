@@ -30,6 +30,12 @@ class Collider
         Collider(Collider const& autre);
         Collider& operator=(Collider& x);
         Vec2d directionTo(Vec2d to);
+        double distanceTo(Vec2d to);
+        void move(Vec2d dx);
+        bool isColliderInside (Collider other);
+        bool isPointInside (Vec2d p);
+        bool operator>(Collider& body1);
+        bool operator>(Vec2d p);
         Vec2d directionTo(Collider);
     private:
         Vec2d Centre;
