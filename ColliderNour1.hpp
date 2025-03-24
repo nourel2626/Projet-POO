@@ -39,5 +39,5 @@ class Collider
         Vec2d directionTo(Collider);
     private:
         Vec2d Centre;
-        double Rayon;
+        double R;
 };
