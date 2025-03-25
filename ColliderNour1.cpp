@@ -118,14 +118,123 @@ void Collider::clamping(){
       Vec2d newPosition(x,y);
       Position=newPosition;
 
-Vec2d directionTo(Collider to){
-        double x(to.operator[](0),y(to.operator[](1));
-        x=Position.operator[](0)-x;
-        y=Position.operator[](1)-y;
-        Vec2d retour(x,y);
+    Vec2d Collider::minDistance(Collider to){
+       double d1,d2;
+       Vec2d v1,v2,v3,v4,v5,v6,v7,v8,v9;
+       double worldSize = getAppConfig().simulation_world_size;
+       auto width  = worldSize; // largeur
+       auto height = worldSize; // hauteur
+       d1= distance(Centre,to.getPosition());
+       v1=to.getPosition();
+       for (int i(0);i<3;i++){
+           for (int j(0);j<3;j++){
+               if (i==0){
+                   if(j==1){
+                       v2=to.getPosition()+Vec2d(0,height);
+                       d2=distance(Centre,v2);
+                       if (d2<d1) {
+                           d1=d2;
+                           v1=v2;
+                       }
+                   }
+                   else if(j==2){
+                       v3=to.getPosition()+Vec2d(0,-height);
+                       d2=distance(Centre,v3);
+                       if(d2<d1) {
+                           d1=d2;
+                           v1=v3;
+                       };
+                   }
+               }
+               else if(i==1){
+                   if (j==0){
+                       v4=to.getPosition()+Vec2d(width,0);
+                       d2=distance(Centre,v4);
+                       if(d2<d1) {
+                           d1=d2;
+                           v1=v4;
+                       };
+
+                   }
+                   else if (j==1){
+                       v5=to.getPosition()+Vec2d(width,height);
+                       d2=distance(Centre,v5);
+                       if(d2<d1) {
+                           d1=d2;
+                           v1=v5;
+                       };
+                   }
+                   else if (j==2){
+                       v6=to.getPosition()+Vec2d(width,-height);
+                       d2=distance(Centre,v6);
+                       if(d2<d1) {
+                           d1=d2;
+                           v1=v6;
+                       };
+                   }
+               }
+               else if (i==2){
+                   if (j==0){
+                       v7=to.getPosition()+Vec2d(-width,0);
+                       d2=distance(Centre,v7);
+                       if(d2<d1) {
+                           d1=d2;
+                           v1=v7;
+                       };
+                   }
+                   else if (j==1){
+                       v8=to.getPosition()+Vec2d(-width,height);
+                       d2=distance(Centre,v8);
+                       if(d2<d1) {
+                           d1=d2;
+                           v1=v8;
+                       };
+                   }
+                   else if (j==2){
+                       v9=to.getPosition()+Vec2d(-width,-height);
+                       d2=distance(Centre,v9);
+                       if(d2<d1) {
+                           d1=d2;
+                           v1=v9;
+                       };
+                   }
+               }
+           }
+       }
+       Vec2d distanceMin(v1);
+       return distanceMin;
+    }
+    Vec2d Collider::directionTo(Collider to){
+        Vec2d retour;
+        retour=to.getPosition() - minDistance(to);
         return retour;
+
+    }
+    void Collider::move(Vec2d& dx){
+        Vec2d nouvellePosition(Centre+dx); //Centre+=dx;
+        Centre=nouvellePosition;
+        clamping();
+
     }
 
+    bool Collider::isColliding(Collider other){
+        bool retour(false);
+        double rayonTotal(Rayon+other.getRadius());
+        double distanceTotal;
+        distanceTotal= distance(Centre,other.getPosition());
+        if (distanceTotal<rayonTotal)
+            {retour= true;}
+        else
+            {retour= false;}
+        return retour;
+    }
+    bool Collider::operator|(Collider& body1){
+        return isColliding(body1);
+    }
+    std::ostream& Collider::operator<<(std::ostream& os){
+         os<<"Collider: position = "<<Centre<<" radius = "<<Rayon<<std::endl;
+         return os;
+    }
 
 };
 
