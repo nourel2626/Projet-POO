@@ -23,7 +23,7 @@ void Environment::update(sf::Time dt) {
 
 void Environment::draw(sf::RenderTarget& targetWindow) const {
     for (auto cible: Cibles){
-    targetWindow.draw(buildCircle(cible,5,sf::Color(255,0,0))); //position dans l'appel à buildcircle incertain
+    targetWindow.draw(buildCircle(cible,5,sf::Color(255,0,0))); 
 }
 }
 
