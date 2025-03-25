@@ -43,6 +43,6 @@ class Collider
         bool operator|(Collider& body1);
         std::ostream& operator<<(std::ostream& os);
     private:
-        Vec2d Centre;
+        Vec2d Position;
         double Rayon;
 };
