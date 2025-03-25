@@ -36,13 +36,14 @@ class Collider
         bool isPointInside (Vec2d p);
         bool operator>(Collider& body1);
         bool operator>(Vec2d p);
-        Vec2d minDistance(Collider to);
         Vec2d directionTo(Collider to);
         void move(Vec2d& dx);
         bool isColliding(Collider other);
         bool operator|(Collider& body1);
-        std::ostream& operator<<(std::ostream& os);
+        void operator+=(Vec2d dx);
+        double distanceTo(Collider to);
     private:
         Vec2d Position;
         double Rayon;
 };
+        std::ostream& operator<<(std::ostream& os,Collider body);
