@@ -35,9 +35,11 @@ public :
 
     Environment(const Environment&) = delete; // Permet d'éviter la copie d'un Environment à partir d'un constructeur de copie
 
-    ~Environment();
-
     Environment& operator=(const Environment&) = delete; // Permet d'éviter la copie d'un Environment par affectation
+   /*!
+    *@brief Destructeur
+    */
+   ~Environment();
 
     Environment();
 private :
