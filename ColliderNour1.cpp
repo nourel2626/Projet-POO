@@ -34,11 +34,11 @@ Vec2d Collider::getPosition() const&{
 double Collider::getRadius()const{
     return Rayon;
 }
-
+*/
 void Collider::move (Vec2d dx){
     this -> Position +=  dx;
 }
-
+/*
 
 Collider& Collider::operator=(Collider& x){
     Rayon = x.getRadius();
