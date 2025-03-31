@@ -2,15 +2,14 @@
 #include <Application.hpp>
 #include <Utility/Utility.hpp>
 
-    ChasingAutomaton::ChasingAutomaton(Vec2d position, double magnitudeVitesse, Vec2d positionCible, Vec2d direction)
-        :collider(position,CHASING_AUTOMATON_RADIUS)
-    {
-        MagnitudeVitesse=magnitudeVitesse;
-        PositionCible=positionCible;
-        Direction=direction;
 
+    ChasingAutomaton::ChasingAutomaton(const Vec2d& position)
+        : Collider(position,CHASING_AUTOMATON_RADIUS),
+          Direction(1,0),
+          MagnitudeVitesse(0.0),
+          PositionCible(0,0)
+          {}
 
-    }
     double ChasingAutomaton::getStandardMaxSpeed(){
         return CHASING_AUTOMATON_MAX_SPEED;
     }
@@ -26,19 +25,20 @@
     void ChasingAutomaton::update(sf::Time dt){
         Vec2d f(ForceAttraction(moyenne));
         Vec2d acceleration(f/getMass());
-        Vec2d nouvelle_vitesse(getSpeedVector()+acceleration*dt.asSeconds());
+        Vec2d nouvelle_vitesse(getSpeedVector()+(acceleration*dt.asSeconds()));
         Vec2d nouvelle_direction(nouvelle_vitesse.normalised());
         if (nouvelle_vitesse.length()>getStandardMaxSpeed()){
             nouvelle_vitesse=nouvelle_direction*getStandardMaxSpeed();
         }
-        Vec2d nouvelle_position(collider.getPosition()+ nouvelle_vitesse* dt.asSeconds());
-        Vec2d dx(nouvelle_position - collider.getPosition());
-        collider.move(dx);
-
+        Direction = nouvelle_direction;
+        MagnitudeVitesse = nouvelle_vitesse.length();
+        Vec2d nouvelle_position(getPosition()+ nouvelle_vitesse* dt.asSeconds());
+        Vec2d dx(nouvelle_position - getPosition());
+        move(dx);
     }
     Vec2d ChasingAutomaton::ForceAttraction(Deceleration deceleration){
         Vec2d forceAttraction,vTarget,toTarget;
-        toTarget= PositionCible - collider.getPosition();
+        toTarget= PositionCible - getPosition();
         double decelerationNum;
         if(deceleration==forte){
             decelerationNum=0.9;
@@ -58,9 +58,18 @@
     }
     void ChasingAutomaton::draw(sf::RenderTarget &targetWindow){
         sf::Texture& texture = getAppTexture(GHOST_TEXTURE);
-        auto image_to_draw(buildSprite(collider.getPosition(),collider.getRadius()*2,texture));
+        auto image_to_draw(buildSprite(getPosition(), getRadius()*2,texture));
         targetWindow.draw(image_to_draw);
+        targetWindow.draw(buildCircle(PositionCible,5,sf::Color(255,0,0)));
     };
+
+
+
+
+
+
+
+
 
 
 
