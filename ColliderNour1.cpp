@@ -1,3 +1,6 @@
+*
+ * POOSV 2025
+ */
 
 #include <Application.hpp>
 #include <Obstacle/Collider.hpp>
@@ -204,4 +207,5 @@ void Collider::clamping(){
     void Collider::operator+=(Vec2d dx){
         Position= Position+dx;
     }
+
 
