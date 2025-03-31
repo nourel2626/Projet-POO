@@ -2,7 +2,6 @@
 #pragma once
 #include <Utility/Vec2d.hpp>
 #include <Obstacle/Collider.hpp>
-//#include <Utility/Constants.hpp> faut ajouter ça ?
 
 enum Deceleration{forte, moyenne, faible};
 class ChasingAutomaton : public Collider
