@@ -1,6 +1,3 @@
-/*
- * POOSV 2025
- */
 
 #include <Application.hpp>
 #include <Obstacle/Collider.hpp>
@@ -34,11 +31,12 @@ Vec2d Collider::getPosition() const&{
 double Collider::getRadius()const{
     return Rayon;
 }
-*/
-void Collider::move (Vec2d dx){
-    this -> Position +=  dx;
+
+void Collider::move (const Vec2d& dx){
+ Position = Position +  dx;
+ clamping ();
 }
-/*
+
 
 Collider& Collider::operator=(Collider& x){
     Rayon = x.getRadius();
@@ -125,19 +123,20 @@ void Collider::clamping(){
       auto width  = worldSize; // largeur
       auto height = worldSize; // hauteur
 
-      double x(0),y(0);
-      while(Position.operator[](0)<0 or Position[1]<0){
-          if (Position.operator[](0)<0){
-              x=Position.operator[](0)+width; // On dit que la première coordonnée est selon l'axe x
+      double x = Position.x();
+      double y = Position.y();
+      while(x<0 or y<0 or x>width or y>height){
+          if (x<0){
+              x=x+width;
           }
-          if (Position.operator[](0)>width){
-              x=Position.operator[](0)-width;
+          if (x>width){
+              x=x-width;
           }
-          if (Position.operator[](1)<0){
-              y=Position.operator[](1)+height; // On dit que la première coordonnée est selon l'axe x
+          if (y<0){
+              y=y+height;
           }
-          if (Position.operator[](1)>height){
-              y=Position.operator[](1)-height;
+          if (y>height){
+              y=y-height;
           }
 
       }
@@ -176,13 +175,13 @@ void Collider::clamping(){
             return bestDirection;
         }
 
-    void Collider::move(Vec2d& dx){
+ /*   void Collider::move(Vec2d& dx){
         Vec2d nouvellePosition(Position+dx); //Position+=dx;
         Position=nouvellePosition;
         clamping();
 
     }
-
+*/
     bool Collider::isColliding(Collider other){
         bool retour(false);
         double rayonTotal(Rayon+other.getRadius());
@@ -205,6 +204,4 @@ void Collider::clamping(){
     void Collider::operator+=(Vec2d dx){
         Position= Position+dx;
     }
-
-
 
