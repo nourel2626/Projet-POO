@@ -1,15 +1,15 @@
-#ifndef CHASINGAUTOMATON_H
-#define CHASINGAUTOMATON_H
+
 #pragma once
 #include <Utility/Vec2d.hpp>
 #include <Obstacle/Collider.hpp>
+//#include <Utility/Constants.hpp> faut ajouter ça ?
 
 enum Deceleration{forte, moyenne, faible};
-class ChasingAutomaton
+class ChasingAutomaton : public Collider
 {
 public:
     ChasingAutomaton();
-    ChasingAutomaton(Vec2d position, double magnitudeVitesse = 0, Vec2d positionCible = {0,0}, Vec2d direction = {1,0});
+    ChasingAutomaton(const Vec2d& position);
     double getStandardMaxSpeed();
     double getMass();
     void setTargetPosition(Vec2d Position);
@@ -18,12 +18,13 @@ public:
     void draw(sf::RenderTarget& targetWindow);
 
 private:
-    Collider collider;
     Vec2d Direction;
     double MagnitudeVitesse;
     Vec2d PositionCible;
     Vec2d ForceAttraction(Deceleration deceleration);
 };
+
+
 
 
 #endif // CHASINGAUTOMATON_H
