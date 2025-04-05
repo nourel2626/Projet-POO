@@ -21,6 +21,7 @@ class Animal :public Collider{
         double getRotation();
         void setRotation (double angle);
         void drawVision(sf::RenderTarget& targetWindow);
+        bool isTargetInSight(Vec2d positionCible);
     private:
         double Angle;
         double DistanceVision;
