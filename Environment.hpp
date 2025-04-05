@@ -42,6 +42,7 @@ public :
    ~Environment();
 
     Environment();
+    std::list<Vec2d> getTargetsInSigthForAnimal(Animal* animal);
 private :
     std::list <Animal*> Animaux;
     std::list <Vec2d> Cibles;
