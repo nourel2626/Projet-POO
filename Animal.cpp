@@ -54,6 +54,12 @@ Vec2d Animal::getSpeedVector(){
     return MagnitudeVitesse*Direction;
 }
 void Animal::update(sf::Time dt){
+    std::list<Vec2d> ciblesPotentielles(Environment::getTargetsInSigthForAnimal(Animal*));
+    if (ciblesPotentielles.empty()){
+        
+    }
+    else{
+    PositionCible=ciblesPotentielles.front();
     Vec2d f(ForceAttraction(Deceleration::moyenne));
     Vec2d acceleration(f/getMass());
     Vec2d nouvelle_vitesse(getSpeedVector()+acceleration*dt.asSeconds());
@@ -66,6 +72,7 @@ void Animal::update(sf::Time dt){
     Vec2d nouvelle_position( getPosition()+ nouvelle_vitesse* dt.asSeconds());
     Vec2d dx(nouvelle_position -  getPosition());
      move(dx);
+    }
 
 }
 Vec2d Animal::ForceAttraction(Deceleration deceleration){
