@@ -54,9 +54,10 @@ Vec2d Animal::getSpeedVector(){
     return MagnitudeVitesse*Direction;
 }
 void Animal::update(sf::Time dt){
-    std::list<Vec2d> ciblesPotentielles(Environment::getTargetsInSigthForAnimal(Animal*));
+    std::list<Vec2d> ciblesPotentielles;
+    ciblesPotentielles = this->Environment::getTargetsInSigthForAnimal();
     if (ciblesPotentielles.empty()){
-        
+
     }
     else{
     PositionCible=ciblesPotentielles.front();
@@ -95,6 +96,27 @@ Vec2d Animal::ForceAttraction(Deceleration deceleration){
     return forceAttraction;
 
 }
+
+Vec2d Animal::ForceAttraction(Deceleration deceleration){
+    Vec2d forceAttraction,vTarget,toTarget;
+    toTarget= PositionCible -  getPosition();
+    double decelerationNum;
+    if(deceleration==forte){
+        decelerationNum=0.9;
+    }
+    else if (deceleration==moyenne){
+        decelerationNum=0.6;
+    }
+    else{
+        decelerationNum=0.3;
+    }
+
+    double speed(std::min((toTarget.length()/decelerationNum),getStandardMaxSpeed()));
+    vTarget= (toTarget/toTarget.length())*speed;
+    forceAttraction= vTarget - getSpeedVector();
+    return forceAttraction;
+
+}
 void Animal::draw(sf::RenderTarget &targetWindow){
     sf::Texture& texture = getAppTexture(GHOST_TEXTURE);
     auto image_to_draw(buildSprite( getPosition(), getRadius()*2,texture));
@@ -106,13 +128,13 @@ void Animal::draw(sf::RenderTarget &targetWindow){
 
 bool Animal::isTargetInSight(Vec2d positionCible){
     bool retour(false);
-    Vec2d d(positionCible-Collider.getPosition(()));
+    Vec2d d(positionCible-getPosition());
     if (d.lengthSquared()<= getViewDistance()){
         retour=true;
     }
-    Vec2d dn(d.normalized());// normalised*
-
-    if (Direction * dn >= cos((Angle+0.001)/2)){
+    Vec2d dn(d.normalised());
+    double a(Direction.dot(dn));
+    if (a >= cos((Angle+0.001)/2)){
         retour=true;
     }
     if (isEqual(d.lengthSquared(),0)){
@@ -121,6 +143,7 @@ bool Animal::isTargetInSight(Vec2d positionCible){
     return retour;
 
 }
+
 
 
 
