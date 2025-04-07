@@ -67,12 +67,9 @@ double Animal::getRotation () {
 bool Animal::isTargetInSight(Vec2d positionCible){
     bool retour(false);
     Vec2d d(positionCible-getPosition());
-    if (d.lengthSquared()<= getViewDistance()){
-        retour=true;
-    }
     Vec2d dn(d.normalised());
     double a(Direction.dot(dn));
-    if (a >= cos((Angle+0.001)/2)){
+    if ((d.lengthSquared()<= getViewDistance())and(a >= cos((Angle+0.001)/2)){
         retour=true;
     }
     if (isEqual(d.lengthSquared(),0)){
