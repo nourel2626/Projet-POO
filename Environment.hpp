@@ -8,11 +8,11 @@ class Animal;
 
 class Environment {
 public :
-      /*!
+    /*!
      * @brief Ajoute un animal
      * @param animal l'animal à ajouter à la liste d'animaux
      */
-    void addAnimal(Animal*& animal);
+    void addAnimal(Animal* animal);
     /*!
      * @brief Ajoute une cible dans l'environnement
      * @param cible la cible à ajouter à la liste de cibles
@@ -36,13 +36,16 @@ public :
     Environment(const Environment&) = delete; // Permet d'éviter la copie d'un Environment à partir d'un constructeur de copie
 
     Environment& operator=(const Environment&) = delete; // Permet d'éviter la copie d'un Environment par affectation
-   /*!
+
+    /*!
+    *@brief Constructeur
+    */
+    Environment();
+    /*!
     *@brief Destructeur
     */
-   ~Environment();
-
-    Environment();
-    std::list<Vec2d> getTargetsInSigthForAnimal(Animal* animal);
+    ~Environment();
+     std::list<Vec2d> getTargetsInSightForAnimal(Animal* animal);
 private :
     std::list <Animal*> Animaux;
     std::list <Vec2d> Cibles;
