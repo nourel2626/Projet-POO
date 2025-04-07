@@ -69,7 +69,7 @@ bool Animal::isTargetInSight(Vec2d positionCible){
     Vec2d d(positionCible-getPosition());
     Vec2d dn(d.normalised());
     double a(Direction.dot(dn));
-    if ((d.lengthSquared()<= getViewDistance())and(a >= cos((Angle+0.001)/2)){
+    if ((d.lengthSquared()<= getViewDistance())and(a >= cos((Angle+0.001)/2))){
         retour=true;
     }
     if (isEqual(d.lengthSquared(),0)){
