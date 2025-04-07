@@ -27,7 +27,7 @@ class Animal :public Collider{
         double getRandomWalkRadius() const;
         double getRandomWalkDistance () const;
         double getRandomWalkJitter() const;
-        Vec2d randomWalk(Vec2d current_target);
+        Vec2d randomWalk();
         Vec2d convertToGlobalCoord(const Vec2d& local) const;
         bool isTargetInSight(Vec2d positionCible);
     private:
