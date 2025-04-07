@@ -20,7 +20,7 @@ double Animal::getRandomWalkJitter() const{
 double Animal::getViewRange () {
     return ANIMAL_VIEW_RANGE;
 }
-Vec2d Animal::randomWalk(Vec2d current_target) {
+Vec2d Animal::randomWalk() {
     Vec2d random_vec(uniform(-1.0,1.0),uniform(-1.0,1.0));
     current_target += random_vec * getRandomWalkJitter();
     current_target = current_target.normalised()*getRandomWalkRadius();
@@ -69,7 +69,7 @@ bool Animal::isTargetInSight(Vec2d positionCible){
     Vec2d d(positionCible-getPosition());
     Vec2d dn(d.normalised());
     double a(Direction.dot(dn));
-    if ((d.lengthSquared()<= getViewDistance())and(a >= cos((Angle+0.001)/2))){
+    if ((d.lengthSquared()<= getViewDistance()*getViewDistance())and(a >= cos((getViewRange()+0.001)/2))){
         retour=true;
     }
     if (isEqual(d.lengthSquared(),0)){
@@ -98,12 +98,21 @@ void Animal::setRotation(double angle){
 }
 
 void Animal::draw(sf::RenderTarget &targetWindow){
-    sf::Texture& texture = getAppTexture(GHOST_TEXTURE);
-    auto image_to_draw(buildSprite( getPosition(), getRadius()*2,texture));
+    sf::Texture& texture = getAppTexture(ANIMAL_TEXTURE);
+    auto image_to_draw(buildSprite( getPosition(), getRadius()*2,texture,getRotation()*(1/DEG_TO_RAD)));
     targetWindow.draw(image_to_draw);
     targetWindow.draw(buildCircle(PositionCible,5,sf::Color(255,0,0)));
      drawVision(targetWindow); // Problème ici
+     sf::Color color(0, 0, 255);
 
+     // Un anneau autour de la current_target
+
+     auto& env = getAppEnv();
+     std::list<Vec2d> ciblesPotentielles = env.getTargetsInSightForAnimal(this);
+     if (ciblesPotentielles.empty()){
+     targetWindow.draw(buildAnnulus(getPosition() + getRandomWalkDistance()*Direction, getRandomWalkRadius(), sf::Color(255, 150, 0),2));
+     targetWindow.draw(buildCircle(getPosition() + randomWalk(), 5, color));
+}
 }
 double Animal::getStandardMaxSpeed(){
     return ANIMAL_MAX_SPEED;
@@ -117,26 +126,12 @@ void Animal::setTargetPosition(Vec2d Position){
 Vec2d Animal::getSpeedVector(){
     return MagnitudeVitesse*Direction;
 }
-/*void Animal::update(sf::Time dt){
-    Vec2d f(ForceAttraction(Deceleration::moyenne));
-    Vec2d acceleration(f/getMass());
-    Vec2d nouvelle_vitesse(getSpeedVector()+acceleration*dt.asSeconds());
-    Vec2d nouvelle_direction(nouvelle_vitesse.normalised());
-    if (nouvelle_vitesse.length()>getStandardMaxSpeed()){
-        nouvelle_vitesse=nouvelle_direction*getStandardMaxSpeed();
-    }
-    Direction = nouvelle_direction;
-    MagnitudeVitesse = nouvelle_vitesse.length();
-    Vec2d nouvelle_position( getPosition()+ nouvelle_vitesse* dt.asSeconds());
-    Vec2d dx(nouvelle_position -  getPosition());
-     move(dx);
 
-}
-*/
-void Animal::update(sf::Time dt){
+/*void Animal::update(sf::Time dt){
     auto& env = getAppEnv();
     std::list<Vec2d> ciblesPotentielles = env.getTargetsInSightForAnimal(this);
     if (ciblesPotentielles.empty()){
+    move(getPosition()-randomWalk(getPosition()));
 
     }
     else{
@@ -154,6 +149,42 @@ void Animal::update(sf::Time dt){
     Vec2d dx(nouvelle_position -  getPosition());
      move(dx);
     }
+}
+*/
+void Animal::update(sf::Time dt){
+    auto& env = getAppEnv();
+    std::list<Vec2d> ciblesPotentielles = env.getTargetsInSightForAnimal(this);
+    Vec2d f;
+
+    if (ciblesPotentielles.empty()) {
+        // Aucun cible visible -> random walk
+        f = randomWalk();
+    } else {
+        // Choisir une cible visible
+        PositionCible = ciblesPotentielles.front();
+        f = ForceAttraction(Deceleration::moyenne);
+    }
+
+    Vec2d acceleration = f / getMass();
+    Vec2d nouvelle_vitesse = getSpeedVector() + acceleration * dt.asSeconds();
+    Vec2d nouvelle_direction = nouvelle_vitesse.normalised();
+
+    if (nouvelle_vitesse.length() > getStandardMaxSpeed()) {
+        nouvelle_vitesse = nouvelle_direction * getStandardMaxSpeed();
+    }
+
+    if (!isEqual(nouvelle_direction.lengthSquared(), 0.0)) {
+        Direction = nouvelle_direction;
+    }
+
+
+    MagnitudeVitesse = nouvelle_vitesse.length();
+
+    Vec2d old_position = getPosition();
+    Vec2d nouvelle_position = old_position + nouvelle_vitesse * dt.asSeconds();
+    Vec2d dx = nouvelle_position - old_position;
+
+    move(dx);
 }
 
 
