@@ -39,8 +39,8 @@ Cibles.clear();
 std::list<Vec2d> Environment::getTargetsInSigthForAnimal(Animal* animal){
     std::list<Vec2d> ciblesPotentielles;
     for (auto cible: Cibles){
-        if(isTargetInSigth(cible)){
-            ciblesPotentielles.pushBack(cible);
+        if(animal->Animal::isTargetInSigth(cible)){
+            ciblesPotentielles.push_back(cible);
         }
     }
     return ciblesPotentielles;
