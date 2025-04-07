@@ -17,8 +17,11 @@ Cibles.push_back(cible);
 }
 
 void Environment::update(sf::Time dt) {
-    //faire évoluer la faune ici
+    for (auto& animal : Animaux) {
+        animal->update(dt);
+    }
 }
+
 
 void Environment::draw(sf::RenderTarget& targetWindow) const {
     for (auto cible: Cibles){
