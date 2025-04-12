@@ -46,6 +46,11 @@ public :
     */
     ~Environment();
      std::list<Vec2d> getTargetsInSightForAnimal(Animal* animal);
+   double getTemperature() const;
+   void increaseTemperature();
+   void decreaseTemperature();
+   void resetControls();
+    std::list<Vec2d> getTargetsInSightForAnimal(Animal* animal);
 private :
     std::list <Animal*> Animaux;
     std::list <Vec2d> Cibles;
