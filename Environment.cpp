@@ -2,8 +2,26 @@
 #include <Application.hpp>
 #include "Animal/Animal.hpp"
 
-Environment::Environment(){}
+Environment::Environment() : Température(getAppConfig().environment_default_temperature)
+{}
 
+double Environment::getTemperature() const {
+    return Température;
+}
+
+void Environment::increaseTemperature() {
+    Température += 0.5;
+}
+void Environment::decreaseTemperature() {
+    if (Température > getAppConfig().environment_min_temperature) {
+        Température -= 0.5;
+    } else {
+        throw std::invalid_argument("La température est en dessous de la température minimale");
+    }
+}
+void Environment::resetControls(){
+    Température = Température;
+}
 Environment::~Environment() {
     clean();
 }
