@@ -54,4 +54,5 @@ public :
 private :
     std::list <Animal*> Animaux;
     std::list <Vec2d> Cibles;
+    double Temperature;
 };
