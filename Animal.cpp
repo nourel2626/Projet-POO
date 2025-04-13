@@ -98,7 +98,7 @@ void Animal::setRotation(double angle){
 }
 
 void Animal::draw(sf::RenderTarget &targetWindow){
-    sf::Texture& texture = getAppTexture(ANIMAL_TEXTURE);
+    sf::Texture& texture = getTexture();
     auto image_to_draw(buildSprite( getPosition(), getRadius()*2,texture,getRotation()*(1/DEG_TO_RAD)));
     targetWindow.draw(image_to_draw);
     targetWindow.draw(buildCircle(PositionCible,5,sf::Color(255,0,0)));
@@ -187,4 +187,6 @@ void Animal::update(sf::Time dt){
     move(dx);
 }
 
-
+sf::Texture& Animal::getTexture(){
+    return getAppTexture(ANIMAL_TEXTURE);
+}
