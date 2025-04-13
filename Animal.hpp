@@ -13,23 +13,24 @@ class Animal :public Collider{
     public:
         Animal();
         Animal(const Vec2d& position);
-        double getStandardMaxSpeed();
-        double getMass();
+        virtual double getStandardMaxSpeed();
+        virtual double getMass();
         void setTargetPosition(Vec2d Position);
         Vec2d getSpeedVector();
         void update(sf::Time dt);
-        void draw(sf::RenderTarget& targetWindow);
+        virtual void draw(sf::RenderTarget& targetWindow);
         double getViewRange ();
         double getViewDistance();
         double getRotation();
         void setRotation (double angle);
         void drawVision(sf::RenderTarget& targetWindow);
-        double getRandomWalkRadius() const;
-        double getRandomWalkDistance () const;
-        double getRandomWalkJitter() const;
+        virtual double getRandomWalkRadius() const;
+        virtual double getRandomWalkDistance () const;
+        virtual double getRandomWalkJitter() const;
         Vec2d randomWalk();
         Vec2d convertToGlobalCoord(const Vec2d& local) const;
         bool isTargetInSight(Vec2d positionCible);
+        virtual sf::Texture& getTexture();
     private:
         double Angle;
         double DistanceVision;
@@ -39,7 +40,6 @@ class Animal :public Collider{
        Vec2d ForceAttraction(Deceleration deceleration);
        Vec2d current_target = Vec2d(1, 0);
     };
-
 
 
 
