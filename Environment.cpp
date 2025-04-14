@@ -1,6 +1,8 @@
 #include "Environment.hpp"
 #include <Application.hpp>
 #include "Animal/Animal.hpp"
+#include <Application.hpp>
+#include <Environment/OrganicEntity.hpp>
 
 Environment::Environment() : Température(getAppConfig().environment_default_temperature)
 {}
@@ -20,14 +22,14 @@ void Environment::decreaseTemperature() {
     }
 }
 void Environment::resetControls(){
-    Température = Température;
+    Température = getAppConfig().environment_default_temperature;
 }
 Environment::~Environment() {
     clean();
 }
 
-void Environment::addAnimal(Animal* animal){
-    Animaux.push_back(animal);
+void Environment::addEntity(OrganicEntity* entity){
+    Entités.push_back(entity);
 }
 
 void Environment::addTarget(const Vec2d& cible){
@@ -35,8 +37,8 @@ Cibles.push_back(cible);
 }
 
 void Environment::update(sf::Time dt) {
-    for (auto& animal : Animaux) {
-        animal->update(dt);
+    for (auto& entity : Entités) {
+        entity->update(dt);
     }
 }
 
@@ -47,27 +49,28 @@ void Environment::draw(sf::RenderTarget& targetWindow) const {
 }
 
         // Dessiner tous les animaux
-        for (auto& animal : Animaux) {
-            animal->draw(targetWindow);
+        for (auto& entity : Entités) {
+            entity->draw(targetWindow);
         }
     }
-
-
 
 void Environment::clean () {
-for (auto animal: Animaux) {
-   delete animal;
-   animal = nullptr;
+for (auto entity: Entités) {
+   delete entity;
+   entity = nullptr;
 }
-Animaux.clear();
+Entités.clear();
 Cibles.clear();
 }
-std::list<Vec2d> Environment::getTargetsInSightForAnimal(Animal* animal){
-    std::list<Vec2d> ciblesPotentielles;
-    for (auto cible: Cibles){
-        if(animal->isTargetInSight(cible)){
-            ciblesPotentielles.push_back(cible);
+
+std::vector<OrganicEntity*> Environment::getEntitiesInSightForAnimal(Animal* observer) const {
+    std::vector<OrganicEntity*> visibleEntities;
+
+    for (auto& entity : Entités) {
+        if (entity != observer && observer->isTargetInSight(entity->getPosition())) {
+            visibleEntities.push_back(entity);
         }
     }
-    return ciblesPotentielles;
+
+    return visibleEntities;
 }
