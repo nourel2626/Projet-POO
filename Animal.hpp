@@ -12,7 +12,7 @@ class Animal :public Collider{
 
     public:
         Animal();
-        Animal(const Vec2d& position);
+        Animal(const Vec2d& position, double taille, double energie, bool femelle);
         virtual double getStandardMaxSpeed();
         virtual double getMass();
         void setTargetPosition(Vec2d Position);
@@ -39,6 +39,7 @@ class Animal :public Collider{
         Vec2d PositionCible;
        Vec2d ForceAttraction(Deceleration deceleration);
        Vec2d current_target = Vec2d(1, 0);
+ bool estFemelle;
     };
 
 
