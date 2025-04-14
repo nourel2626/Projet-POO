@@ -2,12 +2,13 @@
 #include <Application.hpp>
 
 
-Animal::Animal(const Vec2d& position)
-    : Collider(position,ANIMAL_RADIUS),
-      Direction(1,0),
+Animal::Animal(const Vec2d& position, double taille, double energie, bool femelle)
+    : OrganicEntity(position, taille, energie),
+      Direction(1, 0),
       MagnitudeVitesse(0.0),
-      PositionCible(0,0)
-      {}
+      PositionCible(0, 0),
+      estFemelle(femelle)
+{}
 double Animal:: getRandomWalkRadius () const {
     return ANIMAL_RANDOM_WALK_RADIUS;
 }
