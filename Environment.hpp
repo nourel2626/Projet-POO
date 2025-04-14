@@ -1,18 +1,26 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <list>
-#include <Utility/Vec2d.hpp>
+#include "Utility/Vec2d.hpp"
 #include <Utility/Utility.hpp>
 
+
 class Animal;
+class OrganicEntity;
 
 class Environment {
 public :
+     Environment();
+
+     /*!
+     *@brief Destructeur
+     */
+     ~Environment();
     /*!
      * @brief Ajoute un animal
      * @param animal l'animal à ajouter à la liste d'animaux
      */
-    void addAnimal(Animal* animal);
+    void addEntity(OrganicEntity* entity);
     /*!
      * @brief Ajoute une cible dans l'environnement
      * @param cible la cible à ajouter à la liste de cibles
@@ -37,22 +45,14 @@ public :
 
     Environment& operator=(const Environment&) = delete; // Permet d'éviter la copie d'un Environment par affectation
 
-    /*!
-    *@brief Constructeur
-    */
-    Environment();
-    /*!
-    *@brief Destructeur
-    */
-    ~Environment();
-     std::list<Vec2d> getTargetsInSightForAnimal(Animal* animal);
    double getTemperature() const;
    void increaseTemperature();
    void decreaseTemperature();
    void resetControls();
-    std::list<Vec2d> getTargetsInSightForAnimal(Animal* animal);
+   std::vector<OrganicEntity*> getEntitiesInSightForAnimal(Animal* observer) const;
+
 private :
-    std::list <Animal*> Animaux;
+    std::list <OrganicEntity*> Entités;
     std::list <Vec2d> Cibles;
-    double Temperature;
+    double Température;
 };
