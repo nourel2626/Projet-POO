@@ -3,6 +3,7 @@
 #include <list>
 #include <Utility/Vec2d.hpp>
 #include <Utility/Utility.hpp>
+#include <Environment/OrganicEntity.hpp>
 
 class Cactus :public OrganicEntity{
 public:
