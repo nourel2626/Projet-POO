@@ -10,8 +10,12 @@ public:
     Cactus(Vec2d position);
     ~Cactus();
     void update(sf::Time dt);
-    void draw(sf::RenderTarget& targetWindow);
+    void draw(sf::RenderTarget& targetWindow) const;
+    bool eatableBy(Scorpion const* scorpion) const;
+    bool eatableBy(Lizard const* lizard) const;
+    bool eatableBy(Cactus const* cactus) const;
+    bool eatable( OrganicEntity const* entity) const;
 private:
-    double Taille;
+
 
 };
