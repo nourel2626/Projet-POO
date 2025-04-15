@@ -1,23 +1,28 @@
-#ifndef LIZARD_HPP
-#define LIZARD_HPP
+#pragma once
 
 #include <Animal/Animal.hpp>
 #include <Utility/Vec2d.hpp>
 
 class Lizard: public Animal{
 public:
-    Lizard(Vec2d position, double energie, bool femelle);
+    Lizard(Vec2d position,double taille, double energie, bool femelle);
     Lizard(Vec2d position);
-    virtual double getStandardMaxSpeed();
-    virtual double getMass();
-    virtual double getRandomWalkRadius() const;
-    virtual double getRandomWalkDistance() const;
-    virtual double getRandomWalkJitter() const;
-    virtual double getViewRange();
-    virtual sf::Texture& getTexture();
+    double getStandardMaxSpeed()const ;
+    double getMass()const;
+    double getRandomWalkRadius()const;
+    double getRandomWalkDistance() const;
+    double getRandomWalkJitter() const;
+    double getViewRange() const;
+    sf::Texture& getTexture() const;
+    void update(sf::Time dt) ;
+    void draw(sf::RenderTarget& targetWindow) const;
+    void drawVision(sf::RenderTarget& targetWindow)const;
+    bool isTargetInSight(Vec2d positionCible);
+    bool eatableBy(Scorpion const* scorpion) const;
+    bool eatableBy(Lizard const* lizard) const;
+    bool eatableBy(Cactus const* cactus) const;
+    bool eatable(OrganicEntity const* entity) const;
 private:
-    double Energie;
-    double Taille;
-    bool Femelle;
+
 };
-#endif // LIZARD_HPP
+
