@@ -7,7 +7,7 @@ Animal::Animal(const Vec2d& position, double taille, double energie, bool femell
       Direction(1, 0),
       MagnitudeVitesse(0.0),
       PositionCible(0, 0),
-      estFemelle(femelle)
+      Femelle(femelle)
 {}
 double Animal:: getRandomWalkRadius () const {
     return ANIMAL_RANDOM_WALK_RADIUS;
@@ -18,7 +18,7 @@ double Animal::getRandomWalkDistance () const {
 double Animal::getRandomWalkJitter() const{
     return ANIMAL_RANDOM_WALK_JITTER;
 }
-double Animal::getViewRange () {
+double Animal::getViewRange ()const{
     return ANIMAL_VIEW_RANGE;
 }
 Vec2d Animal::randomWalk() {
@@ -59,10 +59,10 @@ Vec2d Animal::ForceAttraction(Deceleration deceleration){
     return forceAttraction;
 
 }
-double Animal::getViewDistance () {
+double Animal::getViewDistance () const{
     return ANIMAL_VIEW_DISTANCE;
 }
-double Animal::getRotation () {
+double Animal::getRotation ()const{
     return Direction.angle();
 }
 bool Animal::isTargetInSight(Vec2d positionCible){
@@ -79,9 +79,7 @@ bool Animal::isTargetInSight(Vec2d positionCible){
     return retour;
 
 }
-
-
-void Animal::drawVision(sf::RenderTarget &targetWindow) {
+void Animal::drawVision(sf::RenderTarget &targetWindow)const{
     sf::Color color = sf::Color::Black;
     color.a = 16;  // Gris transparent
 
@@ -93,38 +91,40 @@ void Animal::drawVision(sf::RenderTarget &targetWindow) {
     targetWindow.draw(arc);
 }
 
-
 void Animal::setRotation(double angle){
     Direction = {cos(angle), sin (angle)};
 }
 
-void Animal::draw(sf::RenderTarget &targetWindow){
+void Animal::draw(sf::RenderTarget& targetWindow) const{
     sf::Texture& texture = getTexture();
     auto image_to_draw(buildSprite( getPosition(), getRadius()*2,texture,getRotation()*(1/DEG_TO_RAD)));
     targetWindow.draw(image_to_draw);
-    targetWindow.draw(buildCircle(PositionCible,5,sf::Color(255,0,0)));
+    //targetWindow.draw(buildCircle(PositionCible,5,sf::Color(255,0,0)));
      drawVision(targetWindow); // Problème ici
      sf::Color color(0, 0, 255);
 
      // Un anneau autour de la current_target
 
-     auto& env = getAppEnv();
-     std::list<Vec2d> ciblesPotentielles = env.getTargetsInSightForAnimal(this);
-     if (ciblesPotentielles.empty()){
+     //auto& env = getAppEnv();
+     // si état = WANDERING
+     //std::list<Vec2d> ciblesPotentielles = env.getEntitiesInSightForAnimal(this);
+     //if (ciblesPotentielles.empty()){
      targetWindow.draw(buildAnnulus(getPosition() + getRandomWalkDistance()*Direction, getRandomWalkRadius(), sf::Color(255, 150, 0),2));
-     targetWindow.draw(buildCircle(getPosition() + randomWalk(), 5, color));
+     Vec2d moved_current_target = current_target + Vec2d(getRandomWalkDistance(), 0);
+     Vec2d global_target = convertToGlobalCoord(moved_current_target);
+     targetWindow.draw(buildCircle(global_target, 5, color));
 }
-}
-double Animal::getStandardMaxSpeed(){
+
+double Animal::getStandardMaxSpeed()const{
     return ANIMAL_MAX_SPEED;
 }
-double Animal::getMass(){
+double Animal::getMass()const{
     return ANIMAL_MASS;
 }
 void Animal::setTargetPosition(Vec2d Position){
     PositionCible=Position;
 }
-Vec2d Animal::getSpeedVector(){
+Vec2d Animal::getSpeedVector()const{
     return MagnitudeVitesse*Direction;
 }
 
@@ -152,19 +152,58 @@ Vec2d Animal::getSpeedVector(){
     }
 }
 */
-void Animal::update(sf::Time dt){
+Etat Animal::updateState(){
     auto& env = getAppEnv();
-    std::list<Vec2d> ciblesPotentielles = env.getTargetsInSightForAnimal(this);
-    Vec2d f;
-
+    Etat etat;
+    std::list<OrganicEntity> ciblesPotentielles = env.getEntitiesInSightForAnimal2(this);
     if (ciblesPotentielles.empty()) {
         // Aucun cible visible -> random walk
-        f = randomWalk();
+        etat=WANDERING;
     } else {
-        // Choisir une cible visible
+        // Choisir une cible visible mangeable et la plus proche
+        Vec2d meilleurCible;
+        double worldSize = getAppConfig().simulation_world_size;
+        double minDist(worldSize);
+       for (auto& cible : ciblesPotentielles ){
+           double dist(this->distanceTo(cible));
+           if (dist< minDist and eatable(&cible)){
+               minDist=dist;
+           }
+       }
+       etat=FOOD_IN_SIGHT;
+    }
+    return etat;
+}
+
+void Animal::update(sf::Time dt){
+    auto& env = getAppEnv();
+    std::list<Vec2d> ciblesPotentielles = env.getEntitiesInSightForAnimal(this);
+    Vec2d f;
+    Etat etat(updateState());
+
+    switch (etat) {
+    case FOOD_IN_SIGHT:
         PositionCible = ciblesPotentielles.front();
         f = ForceAttraction(Deceleration::moyenne);
+    case FEEDING:
+        f={0,0};
+    case RUNNING_AWAY:
+        f={0,0};
+    case MATE_IN_SIGHT:
+        f={0,0};
+    case MATING:
+        f={0,0};
+    case GIVING_BIRTH:
+        f={0,0};
+    case WANDERING:
+        f = randomWalk();
     }
+
+}
+
+
+void Animal::directionMove(sf::Time dt, Vec2d f)
+{
 
     Vec2d acceleration = f / getMass();
     Vec2d nouvelle_vitesse = getSpeedVector() + acceleration * dt.asSeconds();
@@ -188,6 +227,33 @@ void Animal::update(sf::Time dt){
     move(dx);
 }
 
-sf::Texture& Animal::getTexture(){
+sf::Texture& Animal::getTexture() const{
     return getAppTexture(ANIMAL_TEXTURE);
+}
+
+bool Animal::getSex() const{
+    return Femelle;
+}
+
+
+void Animal::setDirection(Vec2d direction){
+    Direction = direction;
+}
+void Animal::setMagnitudeVitesse(double magnitude){
+    MagnitudeVitesse=magnitude;
+}
+Vec2d Animal::getDirection() const{
+    return Direction;
+}
+bool Animal::eatableBy(Scorpion const* scorpion) const{
+    return false;
+}
+bool Animal::eatableBy(Lizard const* lizard) const{
+    return false;
+}
+bool Animal::eatableBy(Cactus const* cactus) const{
+    return false;
+}
+bool Animal::eatable( OrganicEntity const* entity) const{
+    return entity->eatableBy(this);
 }
