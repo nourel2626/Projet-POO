@@ -5,43 +5,63 @@
 #include "Random/Random.hpp"
 #include <list>
 #include <Environment/Environment.hpp>
+#include <Environment/OrganicEntity.hpp>
 
 enum Deceleration{forte, moyenne, faible};
-class Animal :public Collider{
+enum Etat{
+    FOOD_IN_SIGHT, // nourriture en vue
+    FEEDING,       // en train de manger (là en principe il arrête de se déplacer)
+    RUNNING_AWAY,  // en fuite
+    MATE_IN_SIGHT, // partenaire en vue
+    MATING,        // vie privée (rencontre avec un partenaire!)
+    GIVING_BIRTH,  // donne naissance
+    WANDERING,     // déambule
+};
+
+class Animal : public OrganicEntity{
 
 
     public:
         Animal();
         Animal(const Vec2d& position, double taille, double energie, bool femelle);
-        virtual double getStandardMaxSpeed();
-        virtual double getMass();
+        virtual double getStandardMaxSpeed() const=0;
+        virtual double getMass() const=0;
         void setTargetPosition(Vec2d Position);
-        Vec2d getSpeedVector();
-        void update(sf::Time dt);
-        virtual void draw(sf::RenderTarget& targetWindow);
-        double getViewRange ();
-        double getViewDistance();
-        double getRotation();
+        Vec2d getSpeedVector()const ;
+        void update(sf::Time dt) override;
+        void draw(sf::RenderTarget& targetWindow) const override;
+        Etat updateState();
+        void directionMove(sf::Time dt, Vec2d f);
+        double getViewRange () const;
+        double getViewDistance() const;
+        double getRotation() const;
         void setRotation (double angle);
-        void drawVision(sf::RenderTarget& targetWindow);
-        virtual double getRandomWalkRadius() const;
-        virtual double getRandomWalkDistance () const;
-        virtual double getRandomWalkJitter() const;
+        void drawVision(sf::RenderTarget& targetWindow) const;
+        virtual double getRandomWalkRadius() const=0;
+        virtual double getRandomWalkDistance () const=0;
+        virtual double getRandomWalkJitter() const=0;
         Vec2d randomWalk();
         Vec2d convertToGlobalCoord(const Vec2d& local) const;
-        bool isTargetInSight(Vec2d positionCible);
-        virtual sf::Texture& getTexture();
+        virtual bool isTargetInSight(Vec2d positionCible);
+        virtual sf::Texture& getTexture()const=0;
+        bool getSex() const;
+        void setDirection(Vec2d direction);
+        Vec2d getDirection() const;
+        void setMagnitudeVitesse(double magnitude);
+        Vec2d ForceAttraction(Deceleration deceleration);
+        virtual bool eatableBy(Scorpion const* scorpion) const=0;
+        virtual bool eatableBy(Lizard const* lizard) const=0;
+        virtual bool eatableBy(Cactus const* cactus) const=0;
+        virtual bool eatable(OrganicEntity const* entity) const=0;
     private:
         double Angle;
         double DistanceVision;
         Vec2d Direction;
         double MagnitudeVitesse;
         Vec2d PositionCible;
-       Vec2d ForceAttraction(Deceleration deceleration);
-       Vec2d current_target = Vec2d(1, 0);
- bool estFemelle;
+        Vec2d current_target = Vec2d(1, 0);
+        bool Femelle;
     };
-
 
 
 
