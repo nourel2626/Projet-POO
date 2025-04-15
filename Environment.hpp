@@ -49,10 +49,10 @@ public :
    void increaseTemperature();
    void decreaseTemperature();
    void resetControls();
-   std::vector<OrganicEntity*> getEntitiesInSightForAnimal(Animal* observer) const;
-
+   std::list<Vec2d> getEntitiesInSightForAnimal(Animal* observer) const;
+    std::list<OrganicEntity> getEntitiesInSightForAnimal2(Animal *observer) const ;
 private :
-    std::list <OrganicEntity*> Entités;
+    std::list <OrganicEntity*> Entites;
     std::list <Vec2d> Cibles;
-    double Température;
+    double Temperature;
 };
