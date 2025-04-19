@@ -53,7 +53,7 @@ Vec2d Animal::ForceAttraction(Deceleration deceleration){
         decelerationNum=0.3;
     }
 
-    double speed(std::min((toTarget.length()/decelerationNum),getStandardMaxSpeed()));
+    double speed(std::min((toTarget.length()/decelerationNum),getMaxSpeed()));
     vTarget= (toTarget/toTarget.length())*speed;
     forceAttraction= vTarget - getSpeedVector();
     return forceAttraction;
@@ -108,15 +108,29 @@ void Animal::draw(sf::RenderTarget& targetWindow) const{
      //auto& env = getAppEnv();
      // si état = WANDERING
      //std::list<Vec2d> ciblesPotentielles = env.getEntitiesInSightForAnimal(this);
-     //if (ciblesPotentielles.empty()){
-     targetWindow.draw(buildAnnulus(getPosition() + getRandomWalkDistance()*Direction, getRandomWalkRadius(), sf::Color(255, 150, 0),2));
-     Vec2d moved_current_target = current_target + Vec2d(getRandomWalkDistance(), 0);
-     Vec2d global_target = convertToGlobalCoord(moved_current_target);
+     if (Etat==WANDERING){
+        targetWindow.draw(buildAnnulus(getPosition() + getRandomWalkDistance()*Direction, getRandomWalkRadius(), sf::Color(255, 150, 0),2));
+        Vec2d moved_current_target = current_target + Vec2d(getRandomWalkDistance(), 0);
+        Vec2d global_target = convertToGlobalCoord(moved_current_target);
      targetWindow.draw(buildCircle(global_target, 5, color));
+     }
 }
 
 double Animal::getStandardMaxSpeed()const{
     return ANIMAL_MAX_SPEED;
+}
+double Animal::getMaxSpeed() const{
+    double retour(getStandardMaxSpeed());
+    if (Etat==FOOD_IN_SIGHT){
+        retour*=3;
+    }
+    else if(Etat==MATE_IN_SIGHT){
+        retour*=2;
+    }
+    else if(Etat == RUNNING_AWAY){
+        retour*=4;
+    }
+    return retour;
 }
 double Animal::getMass()const{
     return ANIMAL_MASS;
@@ -152,53 +166,90 @@ Vec2d Animal::getSpeedVector()const{
     }
 }
 */
-Etat Animal::updateState(){
+OrganicEntity* Animal::updateState(){
     auto& env = getAppEnv();
-    Etat etat;
-    std::list<OrganicEntity> ciblesPotentielles = env.getEntitiesInSightForAnimal2(this);
-    if (ciblesPotentielles.empty()) {
+    State etat;
+    OrganicEntity* meilleurCible(this);
+    std::list<OrganicEntity*> ciblesPotentielles = env.getEntitiesInSightForAnimal2(this);
+    int ciblesMangeables(0);
+    for (auto& cible : ciblesPotentielles ){
+        if(eatable(cible)){
+            ciblesMangeables+=1;
+        }
+     }
+    if (ciblesPotentielles.empty() or ciblesMangeables==0) {
         // Aucun cible visible -> random walk
         etat=WANDERING;
     } else {
         // Choisir une cible visible mangeable et la plus proche
-        Vec2d meilleurCible;
+
         double worldSize = getAppConfig().simulation_world_size;
         double minDist(worldSize);
        for (auto& cible : ciblesPotentielles ){
-           double dist(this->distanceTo(cible));
-           if (dist< minDist and eatable(&cible)){
+           double dist(this->distanceTo(cible->getPosition()));
+           if (dist< minDist and eatable(cible)){
                minDist=dist;
+               meilleurCible=cible;
            }
        }
        etat=FOOD_IN_SIGHT;
+
     }
-    return etat;
+    Etat = etat;
+    return meilleurCible;
 }
 
 void Animal::update(sf::Time dt){
     auto& env = getAppEnv();
     std::list<Vec2d> ciblesPotentielles = env.getEntitiesInSightForAnimal(this);
     Vec2d f;
-    Etat etat(updateState());
+    OrganicEntity* cible(updateState());
 
-    switch (etat) {
+    switch (Etat) {
     case FOOD_IN_SIGHT:
-        PositionCible = ciblesPotentielles.front();
+        PositionCible = cible->getPosition();
         f = ForceAttraction(Deceleration::moyenne);
+        break;
     case FEEDING:
         f={0,0};
+        break;
     case RUNNING_AWAY:
         f={0,0};
+        break;
     case MATE_IN_SIGHT:
         f={0,0};
+        break;
     case MATING:
         f={0,0};
+        break;
     case GIVING_BIRTH:
         f={0,0};
+        break;
     case WANDERING:
         f = randomWalk();
+        break;
+    }
+    Vec2d acceleration = f / getMass();
+    Vec2d nouvelle_vitesse = getSpeedVector() + acceleration * dt.asSeconds();
+    Vec2d nouvelle_direction = nouvelle_vitesse.normalised();
+
+    if (nouvelle_vitesse.length() > getMaxSpeed()) {
+        nouvelle_vitesse = nouvelle_direction * getMaxSpeed();
     }
 
+    if (!isEqual(nouvelle_direction.lengthSquared(), 0.0)) {
+        Direction = nouvelle_direction;
+    }
+
+
+    MagnitudeVitesse = nouvelle_vitesse.length();
+
+    Vec2d old_position = getPosition();
+    Vec2d nouvelle_position = old_position + nouvelle_vitesse * dt.asSeconds();
+    Vec2d dx = nouvelle_position - old_position;
+
+    move(dx);
+    //directionMove(dt, f);
 }
 
 
@@ -209,8 +260,8 @@ void Animal::directionMove(sf::Time dt, Vec2d f)
     Vec2d nouvelle_vitesse = getSpeedVector() + acceleration * dt.asSeconds();
     Vec2d nouvelle_direction = nouvelle_vitesse.normalised();
 
-    if (nouvelle_vitesse.length() > getStandardMaxSpeed()) {
-        nouvelle_vitesse = nouvelle_direction * getStandardMaxSpeed();
+    if (nouvelle_vitesse.length() > getMaxSpeed()) {
+        nouvelle_vitesse = nouvelle_direction * getMaxSpeed();
     }
 
     if (!isEqual(nouvelle_direction.lengthSquared(), 0.0)) {
@@ -255,5 +306,6 @@ bool Animal::eatableBy(Cactus const* cactus) const{
     return false;
 }
 bool Animal::eatable( OrganicEntity const* entity) const{
-    return entity->eatableBy(this);
+    //return entity->eatableBy(this);
+    return false;
 }
