@@ -8,6 +8,7 @@ public:
     Lizard(Vec2d position,double taille, double energie, bool femelle);
     Lizard(Vec2d position);
     double getStandardMaxSpeed()const ;
+    double getMaxSpeed() const;
     double getMass()const;
     double getRandomWalkRadius()const;
     double getRandomWalkDistance() const;
@@ -25,4 +26,5 @@ public:
 private:
 
 };
+
 
