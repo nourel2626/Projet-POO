@@ -9,6 +9,7 @@ public:
     Scorpion(Vec2d position,double taille, double energie, bool femelle);
     Scorpion(Vec2d position);
     double getStandardMaxSpeed() const;
+    double getMaxSpeed() const;
     double getMass()const;
     double getRandomWalkRadius() const;
     double getRandomWalkDistance()const;
@@ -26,3 +27,4 @@ public:
 private:
 
 };
+
