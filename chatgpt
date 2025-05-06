@@ -208,3 +208,8 @@ Scorpion::Scorpion(Vec2d position)
              uniform(0,1)==0,
              getAppConfig().scorpion_longevity)
 {}
+
+Cactus::Cactus(Vec2d position)
+    : OrganicEntity(position, getAppConfig().food_size, getAppConfig().food_energy, sf::seconds(1E9))
+{}
+
