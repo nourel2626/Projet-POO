@@ -201,3 +201,10 @@ Lizard::Lizard(Vec2d position)
              uniform(0,1)==0,
              getAppConfig().lizard_longevity)
 {}
+Scorpion::Scorpion(Vec2d position)
+    : Animal(position,
+             getAppConfig().scorpion_size,
+             getAppConfig().scorpion_energy_initial,
+             uniform(0,1)==0,
+             getAppConfig().scorpion_longevity)
+{}
