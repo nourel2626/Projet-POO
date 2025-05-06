@@ -178,3 +178,12 @@ bool OrganicEntity::matable(OrganicEntity const* other) const {
   sf::Time OrganicEntity::getAge() const {
       return Age;
   }
+dans organic entity hpp:
+ double getTaille();
+    bool isDead ();
+    void updateAge(sf::Time dt);
+ virtual bool matable(OrganicEntity const* other) const = 0;
+    virtual bool canMate(Scorpion const* scorpion) const = 0;
+    virtual bool canMate(Lizard const* lizard) const = 0;
+    virtual bool canMate(Cactus const* food) const = 0;
+    sf::Time getAge () const;
