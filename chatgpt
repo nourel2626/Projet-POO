@@ -9,3 +9,143 @@ répartition partie 4:
 Paula: 4.2
 
 Nour: 4.1
+
+update dans animal
+Animal::Animal(const Vec2d& position, double taille, double energie, bool femelle, sf::Time longevite)
+    : OrganicEntity(position, taille, energie, longevite),
+      Direction(1, 0),
+      MagnitudeVitesse(0.0),
+      PositionCible(0, 0),
+      Femelle(femelle)
+{}
+
+void Animal::update(sf::Time dt){
+    auto& env = getAppEnv();
+    std::list<Vec2d> ciblesPotentielles = env.getEntitiesInSightForAnimal(this);
+    Vec2d f;
+    OrganicEntity* cible(updateState());
+
+    switch (Etat) {
+    case FOOD_IN_SIGHT:
+        PositionCible = cible->getPosition();
+        f = ForceAttraction(Deceleration::moyenne);
+        break;
+    case FEEDING:
+        f={0,0};
+        break;
+    case RUNNING_AWAY:
+        f={0,0};
+        break;
+    case MATE_IN_SIGHT:
+        f={0,0};
+        break;
+    case MATING:
+          f={0,0};
+          break;
+      case GIVING_BIRTH:
+          f={0,0};
+          break;
+      case WANDERING:
+          f = randomWalk();
+          break;
+      }
+      Vec2d acceleration = f / getMass();
+      Vec2d nouvelle_vitesse = getSpeedVector() + acceleration * dt.asSeconds();
+      Vec2d nouvelle_direction = nouvelle_vitesse.normalised();
+
+      if (nouvelle_vitesse.length() > getMaxSpeed()) {
+          nouvelle_vitesse = nouvelle_direction * getMaxSpeed();
+      }
+
+      if (!isEqual(nouvelle_direction.lengthSquared(), 0.0)) {
+          Direction = nouvelle_direction;
+      }
+      MagnitudeVitesse = nouvelle_vitesse.length();
+
+      Vec2d old_position = getPosition();
+      Vec2d nouvelle_position = old_position + nouvelle_vitesse * dt.asSeconds();
+      Vec2d dx = nouvelle_position - old_position;
+
+      move(dx);
+      updateAge(dt);
+      double perte_energie;
+      perte_energie = getAppConfig().animal_base_energy_consumption + (getSpeedVector().length()*getEnergyLossFactor()*dt.asSeconds());
+      Energie = Energie - perte_energie;
+      //directionMove(dt, f);
+  }
+bool Animal::matable(OrganicEntity const* other) const {
+    if (other->matable(this) && this->matable(other)) {
+        return true;
+    }
+}
+bool Animal::canMate(Scorpion const* scorpion) const {
+    return false;
+}
+bool Animal::canMate(Lizard const* lizard) const {
+    return false;
+}
+bool Animal::canMate(Cactus const* food) const {
+    return false;
+}
+sf::Texture& Animal::getTexture() {
+    return getAppTexture(ANIMAL_TEXTURE);
+}
+
+dans animal hpp:
+  Animal(const Vec2d& position, double taille, double energie, bool femelle, sf::Time longevite);
+virtual bool matable(OrganicEntity const* other) const override;
+        virtual bool canMate(Scorpion const* scorpion) const override;
+        virtual bool canMate(Lizard const* lizard) const override;
+        virtual bool canMate(Cactus const* food) const override;
+
+dans lizard cpp:
+izard::Lizard(Vec2d position, double taille, double energie, bool femelle)
+    : Animal(position, taille, energie, femelle, getAppConfig().lizard_longevity)
+{}
+
+
+Lizard::Lizard(Vec2d position)
+    : Animal(position,
+             getAppConfig().lizard_size,
+             getAppConfig().lizard_energy_initial,
+             uniform(0,1)==0,
+             getAppConfig().lizard_longevity)
+{}
+bool Lizard::matable(OrganicEntity const* other) const {
+    if (other->matable(this) && this->matable(other)) {
+        return true;
+    }
+}
+bool Lizard::canMate(Scorpion const* scorpion) const {
+    return false;
+}
+bool Lizard::canMate(Lizard const* lizard) const { //il manque si enceinte ou accouche
+    if (this != lizard) {
+        return false;
+    }
+    if (this->getSex() == lizard->getSex()){
+        return false;
+    }
+    if (getSex()){
+        if (getEnergie() < getAppConfig().lizard_energy_min_mating_female) {
+            return false;
+        } else {
+            if (getEnergie() < getAppConfig().lizard_energy_min_mating_male) {
+                return false;
+            }
+        }
+    }
+    if (getAge().asSeconds() < getAppConfig().lizard_min_age_mating) {
+        return false;
+    }
+    return true;
+}
+bool Lizard::canMate(Cactus const* food) const {
+    return false;
+}
+
+double Lizard::getEnergyLossFactor() const {
+    return getAppConfig().lizard_energy_loss_factor;
+}
+
+dans lizard hpp:
