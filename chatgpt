@@ -119,3 +119,9 @@ bool Scorpion::canMate(Cactus const* food) const {
 double Scorpion::getEnergyLossFactor() const {
      return getAppConfig().scorpion_energy_loss_factor;
  }
+ scorpion hpp:
+ bool matable(OrganicEntity const* other) const override;
+    bool canMate(Scorpion const* scorpion) const override;
+    bool canMate(Lizard const* lizard) const override;
+    bool canMate(Cactus const* food) const override;
+virtual double getEnergyLossFactor() const override;
