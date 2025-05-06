@@ -187,3 +187,9 @@ dans organic entity hpp:
     virtual bool canMate(Lizard const* lizard) const = 0;
     virtual bool canMate(Cactus const* food) const = 0;
     sf::Time getAge () const;
+
+
+updateAge(dt);
+      double perte_energie;
+      perte_energie = getAppConfig().animal_base_energy_consumption + (getSpeedVector().length()*getEnergyLossFactor()*dt.asSeconds());
+      setEnergie() = getEnergie() - perte_energie;
