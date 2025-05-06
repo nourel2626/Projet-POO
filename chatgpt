@@ -82,3 +82,40 @@ dans lizard hpp:
     bool canMate(Lizard const* lizard) const override;
     bool canMate(Cactus const* food) const override;
     virtual double getEnergyLossFactor() const override;
+
+dans scorpion cpp:
+bool Scorpion::matable(OrganicEntity const* other) const {
+    if (other->matable(this) && this->matable(other)) {
+        return true;
+    }
+}
+bool Scorpion::canMate(Scorpion const* scorpion) const { //il manque si enceinte ou accouche
+    if (this != scorpion) {
+        return false;
+    }
+    if (this->getSex() == scorpion->getSex()){
+        return false;
+    }
+    if (getSex()){
+        if (getEnergie() < getAppConfig().scorpion_energy_min_mating_female) {
+            return false;
+        } else {
+            if (getEnergie() < getAppConfig().scorpion_energy_min_mating_male) {
+                return false;
+            }
+        }
+    }
+    if (getAge().asSeconds() < getAppConfig().scorpion_min_age_mating) {
+        return false;
+    }
+    return true;
+}
+bool Scorpion::canMate(Lizard const* lizard) const {
+    return false;
+}
+bool Scorpion::canMate(Cactus const* food) const {
+    return false;
+}
+double Scorpion::getEnergyLossFactor() const {
+     return getAppConfig().scorpion_energy_loss_factor;
+ }
