@@ -193,3 +193,11 @@ updateAge(dt);
       double perte_energie;
       perte_energie = getAppConfig().animal_base_energy_consumption + (getSpeedVector().length()*getEnergyLossFactor()*dt.asSeconds());
       setEnergie() = getEnergie() - perte_energie;
+
+Lizard::Lizard(Vec2d position)
+    : Animal(position,
+             getAppConfig().lizard_size,
+             getAppConfig().lizard_energy_initial,
+             uniform(0,1)==0,
+             getAppConfig().lizard_longevity)
+{}
