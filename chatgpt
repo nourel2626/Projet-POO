@@ -213,3 +213,9 @@ Cactus::Cactus(Vec2d position)
     : OrganicEntity(position, getAppConfig().food_size, getAppConfig().food_energy, sf::seconds(1E9))
 {}
 
+OrganicEntity::OrganicEntity(Vec2d const& position, double taille, double energie, sf::Time longevite)
+    : Collider(position, taille/2.0),
+      Energie(energie),
+      Age(sf::Time::Zero),
+      Longevite(longevite)
+{}
