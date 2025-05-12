@@ -50,7 +50,7 @@ public :
    void decreaseTemperature();
    void resetControls();
    std::list<Vec2d> getEntitiesInSightForAnimal(Animal* observer) const;
-    std::list<OrganicEntity> getEntitiesInSightForAnimal2(Animal *observer) const ;
+    std::list<OrganicEntity*> getEntitiesInSightForAnimal2(Animal *observer) const ;
 private :
     std::list <OrganicEntity*> Entites;
     std::list <Vec2d> Cibles;
