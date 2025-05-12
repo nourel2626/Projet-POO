@@ -1,14 +1,18 @@
 #include <Animal/Lizard.hpp>
 #include <Application.hpp>
 
-Lizard::Lizard(Vec2d position,double taille, double energie, bool femelle)
-    :Animal(position, taille, energie, femelle)
+Lizard::Lizard(Vec2d position, double energie, bool femelle,double taille)
+    :Animal(position, energie, femelle, getAppConfig().lizard_longevity, taille)
 {
 
 }
 
 Lizard::Lizard(Vec2d position)
-    :Animal(position,getAppConfig().lizard_size, getAppConfig().lizard_energy_initial,(uniform(0,1)==0) )
+    : Animal(position,
+             getAppConfig().lizard_energy_initial,
+             uniform(0,1)==0,
+             getAppConfig().lizard_longevity,
+             getAppConfig().lizard_size)
 {}
 
 double Lizard::getStandardMaxSpeed()const{
@@ -45,40 +49,6 @@ void Lizard::update(sf::Time dt){
     Animal::update(dt);
 }
 
-//    auto& env = getAppEnv();
-//    std::list<Vec2d> ciblesPotentielles = env.getEntitiesInSightForAnimal(this);
-//    Vec2d f;
-
-//    if (ciblesPotentielles.empty()) {
-//        // Aucun cible visible -> random walk
-//        f = randomWalk();
-//    } else {
-//        // Choisir une cible visible
-//        setTargetPosition(ciblesPotentielles.front());
-//        f = ForceAttraction(Deceleration::moyenne);
-//    }
-
-//    Vec2d acceleration = f / getMass();
-//    Vec2d nouvelle_vitesse = getSpeedVector() + acceleration * dt.asSeconds();
-//    Vec2d nouvelle_direction = nouvelle_vitesse.normalised();
-
-//    if (nouvelle_vitesse.length() > getStandardMaxSpeed()) {
-//        nouvelle_vitesse = nouvelle_direction * getStandardMaxSpeed();
-//    }
-
-//    if (!isEqual(nouvelle_direction.lengthSquared(), 0.0)) {
-//        setDirection(nouvelle_direction);
-//    }
-
-
-//    setMagnitudeVitesse(nouvelle_vitesse.length());
-
-//    Vec2d old_position = getPosition();
-//    Vec2d nouvelle_position = old_position + nouvelle_vitesse * dt.asSeconds();
-//    Vec2d dx = nouvelle_position - old_position;
-
-//    move(dx);
-//}
 void Lizard::draw(sf::RenderTarget& targetWindow)const{
     Animal::draw(targetWindow);
 }
@@ -88,16 +58,7 @@ void Lizard::drawVision(sf::RenderTarget &targetWindow)const{
 
 bool Lizard::isTargetInSight(Vec2d positionCible){
     bool retour(Animal::isTargetInSight(positionCible));
-//    bool retour(false);
-//    Vec2d d(positionCible-getPosition());
-//    Vec2d dn(d.normalised());
-//    double a(getDirection().dot(dn));
-//    if ((d.lengthSquared()<= getViewDistance()*getViewDistance())and(a >= cos((getViewRange()+0.001)/2))){
-//        retour=true;
-//    }
-//    if (isEqual(d.lengthSquared(),0)){
-//        retour=true;
-//    }
+
     return retour;
 
 }
@@ -114,3 +75,80 @@ bool Lizard::eatable( OrganicEntity const* entity) const{
     return entity->eatableBy(this);
 }
 
+OrganicEntity* Lizard::updateState(){
+    return Animal::updateState();
+}
+
+
+//bool Lizard::matable(OrganicEntity const* other) const {
+//    bool retour(false);
+//    if (other->canMate(this) && this->canMate(other)) {
+//        retour= true;
+//    }
+//    return retour;
+//}
+bool Lizard::matable(OrganicEntity const* other) const {
+    bool retour(false);
+    const Lizard* otherLizard = dynamic_cast<const Lizard*>(other);
+    if (otherLizard != nullptr && other->canMate(this) && this->canMate(otherLizard)) {
+        retour = true;
+    }
+    return retour;
+}
+
+bool Lizard::canMate(Scorpion const* scorpion) const {
+    return false;
+}
+bool Lizard::canMate(Lizard const* lizard) const { //il manque si enceinte ou accouche
+
+    if (this->getSex() == lizard->getSex()){
+        return false;
+    }
+    if (getSex()){
+        if (getEnergie() < getAppConfig().lizard_energy_min_mating_female) {
+            return false;
+        } else {
+            if (getEnergie() < getAppConfig().lizard_energy_min_mating_male) {
+                return false;
+            }
+        }
+    }
+    if (getAge().asSeconds() < getAppConfig().lizard_min_age_mating) {
+        return false;
+    }
+    if (getEnceinte()){
+        return false;
+    }
+    if (getEtat()== GIVING_BIRTH){
+        return false;
+    }
+    return true;
+}
+bool Lizard::canMate(Cactus const* food) const {
+    return false;
+}
+
+double Lizard::getEnergyLossFactor() const {
+    return getAppConfig().lizard_energy_loss_factor;
+}
+bool Lizard::meet (OrganicEntity *mate) {
+     return this -> meetWith(mate);
+ }
+ bool Lizard::meetWith (Scorpion *scorpion) {
+     return false;
+ }
+ bool Lizard::meetWith (Lizard *lizard) {
+     if (!(this->canMate(lizard) or lizard ->canMate(this))) {
+         return false;
+     }else {
+         double babies;
+         babies = uniform(getAppConfig().lizard_min_children,getAppConfig().lizard_max_children);
+         setEnceinte(true);
+         this->setEnergie(getEnergie()-(babies*getAppConfig().lizard_energy_loss_female_per_child));
+         lizard->setEnergie(lizard->getEnergie()-getAppConfig().lizard_energy_loss_mating_male);
+         // reste comment indiquer que la femelle est enceinte + temps de gestation
+     }
+ }
+ bool Lizard::meetWith (Cactus *cactus) {
+     return false;
+ }
