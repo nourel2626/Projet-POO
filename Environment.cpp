@@ -36,9 +36,27 @@ void Environment::addTarget(const Vec2d& cible){
 Cibles.push_back(cible);
 }
 
+//void Environment::update(sf::Time dt) {
+//    for (auto& entity : Entites) {
+//        entity->update(dt);
+//        if (entity->isDead()){
+//            delete entity;
+//            entity = nullptr;
+
+//        }
+//    }
+//}
 void Environment::update(sf::Time dt) {
-    for (auto& entity : Entites) {
+    for (auto it = Entites.begin(); it != Entites.end(); ) {
+        OrganicEntity* entity = *it;
         entity->update(dt);
+
+        if (entity->isDead()) {
+            delete entity;
+            it = Entites.erase(it); // Supprime l'élément de la liste et avance l'itérateur
+        } else {
+            ++it;
+        }
     }
 }
 
@@ -74,12 +92,12 @@ std::list<Vec2d> Environment::getEntitiesInSightForAnimal(Animal *observer) cons
 
     return visibleEntities;
 }
-std::list<OrganicEntity> Environment::getEntitiesInSightForAnimal2(Animal *observer) const {
-    std::list<OrganicEntity> visibleEntities;
+std::list<OrganicEntity*> Environment::getEntitiesInSightForAnimal2(Animal *observer) const {
+    std::list<OrganicEntity*> visibleEntities;
 
     for (auto& entity : Entites) {
         if (entity != observer && observer->isTargetInSight(entity->getPosition())) {
-            visibleEntities.push_back(*entity);
+            visibleEntities.push_back(entity);
         }
     }
 
