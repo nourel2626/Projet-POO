@@ -10,51 +10,23 @@ Paula: 4.2
 
 Nour: 4.1
 
-OrganicEntity* Animal::updateState() {
-    auto& env = getAppEnv();
-    auto visibles = env.getEntitiesInSightForAnimal2(this);
-
-    // 1. Si déjà en FEEDING, on vérifie la pause
-    if (Etat == FEEDING) {
-        if (tempsDepuisEtatChange.asSeconds() < getAppConfig().animal_eating_pause_time) {
-            return this;  // Encore en train de manger
-        } else {
-            Etat = WANDERING;
-        }
-    }
-
-    // 2. Analyse de l’environnement
-    analyzeEnvironment(visibles);
-
-    // 3. Reproduction (prioritaire)
-    if (ciblePartenaire != nullptr) {
-        if (Collider::isColliding(*ciblePartenaire)) {
-            Etat = MATING;
-        } else {
-            Etat = MATE_IN_SIGHT;
-        }
-        return ciblePartenaire;
-    }
-
-    // 4. Alimentation
-    if (cibleNourriture != nullptr) {
-        if (Collider::isColliding(*cibleNourriture)) {
-            Etat = FEEDING;
-            tempsDepuisEtatChange = sf::Time::Zero;
-            addEnergie(getAppConfig().animal_meal_retention);
-
-            if (dynamic_cast<Animal*>(cibleNourriture)) { // si la cible est un animal
-                cibleNourriture->setEnergie(0); // tue l’animal mangé
-            } else { // si la cible est un cactus
-                cibleNourriture->addEnergie(-getAppConfig().animal_meal_retention);
-            }
-        } else {
-            Etat = FOOD_IN_SIGHT;
-        }
-        return cibleNourriture;
-    }
-
-    // 5. Rien en vue
-    Etat = WANDERING;
-    return this;
-}
+bool Lizard::meet (OrganicEntity const* mate) const {
+     return this -> meet(mate);
+ }
+ bool Lizard::meetWith (Scorpion const* scorpion) const {
+     return false;
+ }
+ bool Lizard::meetWith (Lizard const* lizard) const {
+     if (!(this->canMate(lizard) or lizard ->canMate(this))) {
+         return false;
+     }else {
+         double babies;
+         babies = uniform(getAppConfig().lizard_min_children,getAppConfig().lizard_max_children);
+         this->setEnergie(getEnergie()-(babies*getAppConfig().lizard_energy_loss_female_per_child));
+         lizard->setEnergie(lizard->getEnergie()-getAppConfig().lizard_energy_loss_mating_male);
+         // reste comment indiquer que la femelle est enceinte + temps de gestation
+     }
+ }
+ bool Lizard::meetWith (Cactus const* cactus) const {
+     return false;
+ }
