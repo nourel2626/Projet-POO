@@ -1,12 +1,11 @@
 #pragma once
-#define SCORPION_HPP
 
 #include <Animal/Animal.hpp>
 
 
 class Scorpion : public Animal{
 public:
-    Scorpion(Vec2d position,double taille, double energie, bool femelle);
+    Scorpion(Vec2d position, double energie, bool femelle,double taille= 150);
     Scorpion(Vec2d position);
     double getStandardMaxSpeed() const;
     double getMaxSpeed() const;
@@ -24,6 +23,16 @@ public:
     bool eatableBy(Cactus const* cactus) const;
     bool eatable(OrganicEntity const* entity) const;
     void drawVision(sf::RenderTarget &targetWindow)const;
+    OrganicEntity* updateState();
+    bool matable(OrganicEntity const* other) const ;
+    bool canMate(Scorpion const* scorpion) const ;
+    bool canMate(Lizard const* lizard) const ;
+    bool canMate(Cactus const* food) const ;
+    double getEnergyLossFactor() const ;
+    bool meet (OrganicEntity *mate) ;//override;
+    bool meetWith (Scorpion *scorpion) ;// override;
+    bool meetWith (Lizard *lizard) ;//override;
+    bool meetWith (Cactus *cactus) ;// override;
 private:
 
 };
