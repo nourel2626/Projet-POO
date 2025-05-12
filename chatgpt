@@ -10,23 +10,7 @@ Paula: 4.2
 
 Nour: 4.1
 
-bool Lizard::meet (OrganicEntity const* mate) const {
-     return this -> meet(mate);
- }
- bool Lizard::meetWith (Scorpion const* scorpion) const {
-     return false;
- }
- bool Lizard::meetWith (Lizard const* lizard) const {
-     if (!(this->canMate(lizard) or lizard ->canMate(this))) {
-         return false;
-     }else {
-         double babies;
-         babies = uniform(getAppConfig().lizard_min_children,getAppConfig().lizard_max_children);
-         this->setEnergie(getEnergie()-(babies*getAppConfig().lizard_energy_loss_female_per_child));
-         lizard->setEnergie(lizard->getEnergie()-getAppConfig().lizard_energy_loss_mating_male);
-         // reste comment indiquer que la femelle est enceinte + temps de gestation
-     }
- }
- bool Lizard::meetWith (Cactus const* cactus) const {
-     return false;
- }
+ bool meet (OrganicEntity const* mate) const override;
+    bool meetWith (Scorpion const* scorpion) const override;
+    bool meetWith (Lizard const* lizard) const override;
+    bool meetWith (Cactus const* cactus) const override;
