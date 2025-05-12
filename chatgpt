@@ -10,7 +10,15 @@ Paula: 4.2
 
 Nour: 4.1
 
- bool meet (OrganicEntity const* mate) const override;
-     bool meetWith (Scorpion const* scorpion) const override;
-     bool meetWith (Lizard const* lizard) const override;
-     bool meetWith (Cactus const* cactus) const override;
+bool Cactus::meet (OrganicEntity const* mate) const {
+     return mate->meet(this);
+ }
+ bool Cactus::meetWith (Scorpion const* scorpion) const {
+     return false;
+ }
+ bool Cactus::meetWith (Lizard const* lizard) const {
+     return false;
+ }
+ bool Cactus::meetWith (Cactus const* cactus) const {
+     return false;
+ }
