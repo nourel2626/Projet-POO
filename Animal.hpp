@@ -17,19 +17,25 @@ enum State{
     GIVING_BIRTH,  // donne naissance
     WANDERING,     // déambule
 };
+struct Pregnancy{
+    bool Enceinte = false;
+    sf::Time Gestation = sf::Time::Zero;
+};
 
 class Animal : public OrganicEntity{
 
 
     public:
         Animal();
-        Animal(const Vec2d& position, double taille, double energie, bool femelle);
+        Animal(const Vec2d& position, double energie, bool femelle, sf::Time longevite, double taille);
         virtual double getStandardMaxSpeed() const=0;
         virtual double getMass() const=0;
         void setTargetPosition(Vec2d Position);
         virtual Vec2d getSpeedVector()const ;
         virtual void update(sf::Time dt) override;
         virtual void draw(sf::RenderTarget& targetWindow) const override;
+        virtual void drawDebug(sf::RenderTarget& targetWindow) const;
+        virtual void drawAnnulus(sf::RenderTarget& targetWindow) const;
         virtual OrganicEntity* updateState();
         virtual void directionMove(sf::Time dt, Vec2d f);
         virtual double getViewRange () const;
@@ -49,11 +55,17 @@ class Animal : public OrganicEntity{
         virtual Vec2d getDirection() const;
         void setMagnitudeVitesse(double magnitude);
         Vec2d ForceAttraction(Deceleration deceleration);
-        virtual bool eatableBy(Scorpion const* scorpion) const override;
-        virtual bool eatableBy(Lizard const* lizard) const override;
-        virtual bool eatableBy(Cactus const* cactus) const override;
-        virtual bool eatable(OrganicEntity const* entity) const override;
         virtual double getMaxSpeed() const=0;
+//        virtual bool matable(OrganicEntity const* other) const override;
+//        virtual bool canMate(Scorpion const* scorpion) const override;
+//        virtual bool canMate(Lizard const* lizard) const override;
+//        virtual bool canMate(Cactus const* food) const override;
+        virtual double getEnergyLossFactor() const=0;
+        void analyzeEnvironment();
+        bool getEnceinte() const;
+        void setEnceinte(bool enceinte);
+        State getEtat() const ;
+        sf::Time getGestation() const;
     private:
         double Angle;
         double DistanceVision;
@@ -63,6 +75,11 @@ class Animal : public OrganicEntity{
         Vec2d current_target = Vec2d(1, 0);
         bool Femelle;
         State Etat;
+        std::list<OrganicEntity*> Predateurs;
+        std::list<OrganicEntity*> Cibles;
+        std::list<OrganicEntity*> Mates;
+        Pregnancy Grossese;
+        sf::Time TempsDepuisEtatChange;
     };
 
 
