@@ -10,212 +10,51 @@ Paula: 4.2
 
 Nour: 4.1
 
-update dans animal
+OrganicEntity* Animal::updateState() {
+    auto& env = getAppEnv();
+    auto visibles = env.getEntitiesInSightForAnimal2(this);
 
-bool Animal::matable(OrganicEntity const* other) const {
-    if (other->matable(this) && this->matable(other)) {
-        return true;
-    }
-}
-bool Animal::canMate(Scorpion const* scorpion) const {
-    return false;
-}
-bool Animal::canMate(Lizard const* lizard) const {
-    return false;
-}
-bool Animal::canMate(Cactus const* food) const {
-    return false;
-}
-sf::Texture& Animal::getTexture() {
-    return getAppTexture(ANIMAL_TEXTURE);
-}
-
-dans animal hpp:
- 
-virtual bool matable(OrganicEntity const* other) const override;
-        virtual bool canMate(Scorpion const* scorpion) const override;
-        virtual bool canMate(Lizard const* lizard) const override;
-        virtual bool canMate(Cactus const* food) const override;
-
-dans lizard cpp:
-
-bool Lizard::matable(OrganicEntity const* other) const {
-    if (other->matable(this) && this->matable(other)) {
-        return true;
-    }
-}
-bool Lizard::canMate(Scorpion const* scorpion) const {
-    return false;
-}
-bool Lizard::canMate(Lizard const* lizard) const { //il manque si enceinte ou accouche
-    if (this != lizard) {
-        return false;
-    }
-    if (this->getSex() == lizard->getSex()){
-        return false;
-    }
-    if (getSex()){
-        if (getEnergie() < getAppConfig().lizard_energy_min_mating_female) {
-            return false;
+    // 1. Si déjà en FEEDING, on vérifie la pause
+    if (Etat == FEEDING) {
+        if (tempsDepuisEtatChange.asSeconds() < getAppConfig().animal_eating_pause_time) {
+            return this;  // Encore en train de manger
         } else {
-            if (getEnergie() < getAppConfig().lizard_energy_min_mating_male) {
-                return false;
-            }
+            Etat = WANDERING;
         }
     }
-    if (getAge().asSeconds() < getAppConfig().lizard_min_age_mating) {
-        return false;
-    }
-    return true;
-}
-bool Lizard::canMate(Cactus const* food) const {
-    return false;
-}
 
-double Lizard::getEnergyLossFactor() const {
-    return getAppConfig().lizard_energy_loss_factor;
-}
+    // 2. Analyse de l’environnement
+    analyzeEnvironment(visibles);
 
-dans lizard hpp:
-   bool matable(OrganicEntity const* other) const override;
-    bool canMate(Scorpion const* scorpion) const override;
-    bool canMate(Lizard const* lizard) const override;
-    bool canMate(Cactus const* food) const override;
-    virtual double getEnergyLossFactor() const override;
-
-dans scorpion cpp:
-bool Scorpion::matable(OrganicEntity const* other) const {
-    if (other->matable(this) && this->matable(other)) {
-        return true;
-    }
-}
-bool Scorpion::canMate(Scorpion const* scorpion) const { //il manque si enceinte ou accouche
-    if (this != scorpion) {
-        return false;
-    }
-    if (this->getSex() == scorpion->getSex()){
-        return false;
-    }
-    if (getSex()){
-        if (getEnergie() < getAppConfig().scorpion_energy_min_mating_female) {
-            return false;
+    // 3. Reproduction (prioritaire)
+    if (ciblePartenaire != nullptr) {
+        if (Collider::isColliding(*ciblePartenaire)) {
+            Etat = MATING;
         } else {
-            if (getEnergie() < getAppConfig().scorpion_energy_min_mating_male) {
-                return false;
-            }
+            Etat = MATE_IN_SIGHT;
         }
+        return ciblePartenaire;
     }
-    if (getAge().asSeconds() < getAppConfig().scorpion_min_age_mating) {
-        return false;
+
+    // 4. Alimentation
+    if (cibleNourriture != nullptr) {
+        if (Collider::isColliding(*cibleNourriture)) {
+            Etat = FEEDING;
+            tempsDepuisEtatChange = sf::Time::Zero;
+            addEnergie(getAppConfig().animal_meal_retention);
+
+            if (dynamic_cast<Animal*>(cibleNourriture)) { // si la cible est un animal
+                cibleNourriture->setEnergie(0); // tue l’animal mangé
+            } else { // si la cible est un cactus
+                cibleNourriture->addEnergie(-getAppConfig().animal_meal_retention);
+            }
+        } else {
+            Etat = FOOD_IN_SIGHT;
+        }
+        return cibleNourriture;
     }
-    return true;
+
+    // 5. Rien en vue
+    Etat = WANDERING;
+    return this;
 }
-bool Scorpion::canMate(Lizard const* lizard) const {
-    return false;
-}
-bool Scorpion::canMate(Cactus const* food) const {
-    return false;
-}
-double Scorpion::getEnergyLossFactor() const {
-     return getAppConfig().scorpion_energy_loss_factor;
- }
- scorpion hpp:
- bool matable(OrganicEntity const* other) const override;
-    bool canMate(Scorpion const* scorpion) const override;
-    bool canMate(Lizard const* lizard) const override;
-    bool canMate(Cactus const* food) const override;
-virtual double getEnergyLossFactor() const override;
-
-cactus cpp:
-bool Cactus::matable(OrganicEntity const* other) const {
-     if (other->matable(this) && this->matable(other)) {
-         return true;
-     }
- }
-
- bool Cactus::canMate(Scorpion const* scorpion) const {
-     return false;
- }
- bool Cactus::canMate(Lizard const* lizard) const {
-     return false;
- }
- bool Cactus::canMate(Cactus const* food) const {
-     return false;
- }
-cactus hpp:
- bool matable(OrganicEntity const* other) const ;
-        bool canMate(Scorpion const* scorpion) const;
-        bool canMate(Lizard const* lizard) const ;
-        bool canMate(Cactus const* food) const ;
-dans organic entity cpp:
-double OrganicEntity::getTaille(){
-     return getRadius();
- }
-bool OrganicEntity::isDead (){
-     bool retour = false;
-     if ((Energie < getAppConfig().animal_min_energy) or (Age > Longevite)) {
-         retour = true;
-     }
-         return retour;
- }
-
- void OrganicEntity::updateAge(sf::Time dt){
-     Age += dt;
- }
-bool OrganicEntity::matable(OrganicEntity const* other) const {
-     return false;
- }
-  bool OrganicEntity::canMate(Scorpion const* scorpion) const {
-      return false;
-  }
-  bool OrganicEntity::canMate(Lizard const* lizard) const {
-      return false;
-  }
-
-  bool OrganicEntity::canMate(Cactus const* food) const {
-      return false;
-  }
-  sf::Time OrganicEntity::getAge() const {
-      return Age;
-  }
-dans organic entity hpp:
- double getTaille();
-    bool isDead ();
-    void updateAge(sf::Time dt);
- virtual bool matable(OrganicEntity const* other) const = 0;
-    virtual bool canMate(Scorpion const* scorpion) const = 0;
-    virtual bool canMate(Lizard const* lizard) const = 0;
-    virtual bool canMate(Cactus const* food) const = 0;
-    sf::Time getAge () const;
-
-
-updateAge(dt);
-      double perte_energie;
-      perte_energie = getAppConfig().animal_base_energy_consumption + (getSpeedVector().length()*getEnergyLossFactor()*dt.asSeconds());
-      setEnergie() = getEnergie() - perte_energie;
-
-Lizard::Lizard(Vec2d position)
-    : Animal(position,
-             getAppConfig().lizard_size,
-             getAppConfig().lizard_energy_initial,
-             uniform(0,1)==0,
-             getAppConfig().lizard_longevity)
-{}
-Scorpion::Scorpion(Vec2d position)
-    : Animal(position,
-             getAppConfig().scorpion_size,
-             getAppConfig().scorpion_energy_initial,
-             uniform(0,1)==0,
-             getAppConfig().scorpion_longevity)
-{}
-
-Cactus::Cactus(Vec2d position)
-    : OrganicEntity(position, getAppConfig().food_size, getAppConfig().food_energy, sf::seconds(1E9))
-{}
-
-OrganicEntity::OrganicEntity(Vec2d const& position, double taille, double energie, sf::Time longevite)
-    : Collider(position, taille/2.0),
-      Energie(energie),
-      Age(sf::Time::Zero),
-      Longevite(longevite)
-{}
