@@ -10,7 +10,15 @@ Paula: 4.2
 
 Nour: 4.1
 
- bool meet (OrganicEntity const* mate) const;
-         bool meetWith (Scorpion const* scorpion) const;
-         bool meetWith (Lizard const* lizard) const;
-         bool meetWith (Cactus const* cactus) const;
+  bool OrganicEntity::meet (OrganicEntity const* mate) const {
+      return false;
+  }
+  bool OrganicEntity::meetWith (Scorpion const* scorpion) const {
+      return false;
+  }
+  bool OrganicEntity::meetWith (Lizard const* lizard) const {
+      return false;
+  }
+  bool OrganicEntity::meetWith (Cactus const* cactus) const {
+      return false;
+  }
