@@ -5,7 +5,7 @@
 
 class Lizard: public Animal{
 public:
-    Lizard(Vec2d position,double taille, double energie, bool femelle);
+    Lizard(Vec2d position, double energie, bool femelle,double taille = 150);
     Lizard(Vec2d position);
     double getStandardMaxSpeed()const ;
     double getMaxSpeed() const;
@@ -23,8 +23,17 @@ public:
     bool eatableBy(Lizard const* lizard) const;
     bool eatableBy(Cactus const* cactus) const;
     bool eatable(OrganicEntity const* entity) const;
+    OrganicEntity* updateState();
+    bool matable(OrganicEntity const* other) const ;//override;
+    bool canMate(Scorpion const* scorpion) const ;//override;
+    bool canMate(Lizard const* lizard) const ;//override;
+    bool canMate(Cactus const* food) const ;//override;
+    double getEnergyLossFactor() const;//override;
+    bool meet (OrganicEntity *mate) ;//override;
+    bool meetWith (Scorpion *scorpion) ;// override;
+    bool meetWith (Lizard *lizard) ;// override;
+    bool meetWith (Cactus *cactus) ;// override;
 private:
 
 };
-
 
