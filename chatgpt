@@ -10,7 +10,16 @@ Paula: 4.2
 
 Nour: 4.1
 
-  virtual bool meet (OrganicEntity const* mate) const = 0;
-    virtual bool meetWith (Scorpion const* scorpion) const = 0;
-    virtual bool meetWith (Lizard const* lizard) const = 0;
-    virtual bool meetWith (Cactus const* cactus) const =0;
+OrganicEntity* Animal::bestEntity(std::list<OrganicEntity*> entities) {
+    OrganicEntity* retour;
+    double worldSize = getAppConfig().simulation_world_size;
+    double minDist(worldSize);
+    for (auto& entity : entities ){
+        double dist(this->distanceTo(entity->getPosition()));
+        if (dist< minDist){
+            minDist=dist;
+            retour = entity;
+        }
+    }
+    return retour;
+}
