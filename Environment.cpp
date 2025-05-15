@@ -58,6 +58,17 @@ void Environment::update(sf::Time dt) {
             ++it;
         }
     }
+    for (auto it = Waves.begin(); it != Waves.end(); ) {
+            (*it)->update(dt);
+
+            if ((*it)->getIntensity() < getAppConfig().wave_intensity_threshold) {
+                delete *it;
+                it = Waves.erase(it);
+            } else {
+                ++it;
+            }
+        }
+
 }
 
 
@@ -70,13 +81,28 @@ void Environment::draw(sf::RenderTarget& targetWindow) const {
         for (auto& entity : Entites) {
             entity->draw(targetWindow);
         }
+        for (auto& wave : Waves) {
+                wave->draw(targetWindow);
+            }
+        for (auto& rock : Rocks) {
+                rock->draw(targetWindow);
+            }
     }
 
 void Environment::clean () {
 for (auto entity: Entites) {
    delete entity;
    entity = nullptr;
+for (auto wave: Waves) {
+   delete wave;
+   wave = nullptr;
 }
+for (auto rock: Rocks) {
+   delete rock;
+   rock = nullptr;
+}
+Rocks.clear();
+Waves.clear();
 Entites.clear();
 Cibles.clear();
 }
@@ -102,4 +128,20 @@ std::list<OrganicEntity*> Environment::getEntitiesInSightForAnimal2(Animal *obse
     }
 
     return visibleEntities;
+}
+void Environment::addWave(Wave* wave) {
+
+    if (wave != nullptr) {
+        Waves.push_back(wave);
+    }
+}
+
+void Environment::addObstacle(Collider* collider){
+if (collider!=nullptr) {
+    Rocks.push_back(collider);
+}
+}
+
+std::vector<Collider*> Environment::getObstacles() const {
+    return Rocks;
 }
