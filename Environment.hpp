@@ -51,6 +51,9 @@ public :
    void resetControls();
    std::list<Vec2d> getEntitiesInSightForAnimal(Animal* observer) const;
     std::list<OrganicEntity*> getEntitiesInSightForAnimal2(Animal *observer) const ;
+    void addWave(Wave* wave);
+    void addObstacle(Collider* collider);
+    std::vector<Collider*> getObstacles() const;
 private :
     std::list <OrganicEntity*> Entites;
     std::list <Vec2d> Cibles;
