@@ -42,6 +42,7 @@ class Collider
         bool operator|(Collider& body1);
         void operator+=(Vec2d dx);
         double distanceTo(Collider to);
+        virtual void draw(sf::RenderTarget& target) const = 0;
     private:
         Vec2d Position;
         double Rayon;
