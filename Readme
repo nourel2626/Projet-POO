@@ -1,0 +1,18 @@
+La simulation du desert permet de modéliser la vie dans animaux et l'évolution de l'environment.
+L'enviroment est constitué d'une température, nuages, flore et une faune.
+la flore est composé de catus et la faune est composée de lézards et scorpions.
+
+##Compilation et execution 
+
+
+##CIBLES PRINCIPALES 
+* application -> Application finale.
+* ppsTest -> predpredateur-proie simulation 
+
+##FICHIERS DE CONFIGURATION 
+les fichiers de configuration qu'on a utilisé sont le pps.json
+
+##COMANDES 
+les comandes pour l'utilisation sont les mêmes que sur le paneau à droite de la simulation. Exepté pour le control de la température qu'on a changé à B pour descendre la température et M pour la monter.
+
+##Pas de modification
