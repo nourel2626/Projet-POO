@@ -10,6 +10,7 @@ public:
     void emission();
     void update(sf::Time dt);
 private:
-
+   sf::Time Clock = sf::Time::Zero;
 
 };
+
