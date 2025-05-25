@@ -16,8 +16,12 @@ void WaveLizard::emission() {
                          getAppConfig().wave_default_mu, getAppConfig().wave_default_speed);
     getAppEnv().addWave(wave);
 }
-void WaveLizard::update(sf::Time dt){
+void WaveLizard::update(sf::Time dt) {
     Lizard::update(dt);
-    emission();
-}
+    Clock += dt;
 
+    if (Clock.asSeconds() >= (1.0 / getAppConfig().wave_lizard_frequency)) {
+        emission();
+        Clock = sf::Time::Zero;
+    }
+}
