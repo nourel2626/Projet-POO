@@ -1,3 +1,6 @@
+/*
+ * POOSV 2025
+ */
 
 #pragma once
 
@@ -41,7 +44,7 @@ class Collider
          */
         Collider(Vec2d centre, double rayon);
         /*!
-         * @brief Force la position à rester dans les limites du monde (torique)
+         * @brief Force la position à rester dans les limites du monde 
          */
         void clamping();
         /*!
@@ -61,14 +64,14 @@ class Collider
          * @brief Calcule la direction normalisée vers un point donné
          *
          * @param to La destination
-         * @return Un vecteur unitaire dans la direction la plus courte vers `to`
+         * @return Un vecteur unitaire dans la direction la plus courte vers to
          */
         Vec2d directionTo(Vec2d to);
         /*!
          * @brief Calcule la distance minimale torique jusqu’à un point donné
          *
          * @param to Le point cible
-         * @return La distance minimale torique entre le centre et `to`
+         * @return La distance minimale torique entre le centre et to
          */
         double distanceTo(Vec2d to);
         /*!
@@ -81,7 +84,7 @@ class Collider
          * @brief Teste si un autre collider est totalement contenu dans celui-ci
          *
          * @param other Le collider cible
-         * @return true si `other` est entièrement à l’intérieur de ce collider
+         * @return true si other est entièrement à l’intérieur de ce collider
          */
         bool isColliderInside (const Collider& other);
         /*!
@@ -92,7 +95,7 @@ class Collider
          */
         bool isPointInside (Vec2d p);
         /*!
-         * @brief Surcharge de l’opérateur > (interprétation contextuelle)
+         * @brief Surcharge de l’opérateur > 
          */
         bool operator>(Collider& body1);
         /*!
@@ -103,7 +106,7 @@ class Collider
          * @brief Calcule la direction vers un autre collider
          *
          * @param to Le collider cible
-         * @return Vecteur unitaire de direction vers `to`
+         * @return Vecteur unitaire de direction vers to
          */
         Vec2d directionTo(const Collider& to);
         /*!
@@ -114,7 +117,7 @@ class Collider
          */
         bool isColliding(const Collider& other);
         /*!
-         * @brief Surcharge de l'opérateur | (interprétation contextuelle, probablement test de collision)
+         * @brief Surcharge de l'opérateur | 
          */
         bool operator|(Collider& body1);
         /*!
@@ -131,9 +134,9 @@ class Collider
          */
         double distanceTo(const Collider& to);
         /*!
-         * @brief Méthode virtuelle pure pour afficher le collider
+         * @brief Méthode pour afficher le collider
          *
-         * @param target Cible de rendu SFML
+         * @param target Cible
          */
         virtual void draw(sf::RenderTarget& target) const;
         virtual ~Collider() = default;
