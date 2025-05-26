@@ -1,4 +1,4 @@
-*
+/*
  * POOSV 2025
  */
 
@@ -24,7 +24,7 @@ double Collider::distanceTo (Vec2d to){
     return (directionTo(to)).length();
 }
 
-double Collider::distanceTo (Collider to){
+double Collider::distanceTo (const Collider& to){
     return (directionTo(to.Position)).length();
 }
 
@@ -33,6 +33,9 @@ Vec2d Collider::getPosition() const&{
 }
 double Collider::getRadius()const{
     return Rayon;
+}
+void Collider::setRadius(double rayon){
+    Rayon=rayon;
 }
 
 void Collider::move (const Vec2d& dx){
@@ -86,11 +89,8 @@ Vec2d Collider::directionTo(Vec2d to){
     }
 
 
-bool Collider::isColliderInside(Collider other) {
+bool Collider::isColliderInside(const Collider& other) {
     bool retour(false);
-    if (this ->Rayon<other.getRadius()){
-        retour= false;
-       }
     if((other.getRadius() <= Rayon) && (distanceTo(other.getPosition()) <= (this->Rayon - other.getRadius()))) {
         retour= true;
     }
@@ -110,16 +110,6 @@ bool Collider::isPointInside(Vec2d p){
     }
     return retour;
 }
-/*
-bool Collider::isPointInside(Vec2d p) {
-    // Calculer la distance entre le centre du Collider (this) et le point p
-    double distance = this->distanceTo(p);
-
-    // Vérifier si la distance est inférieure ou égale au rayon du Collider
-    return distance <= this->Rayon;
-}
-*/
-
 
 void Collider::clamping(){
       double worldSize = getAppConfig().simulation_world_size;
@@ -147,10 +137,10 @@ void Collider::clamping(){
       Position=newPosition;
 }
 
-    Vec2d Collider::directionTo(Collider to){   //faire fonction minDistance pour optimiser
+    Vec2d Collider::directionTo(const Collider& to){   
         double worldSize = getAppConfig().simulation_world_size;
-        auto width  = worldSize; // largeur
-        auto height = worldSize; // hauteur
+        auto width  = worldSize; 
+        auto height = worldSize; 
 
         std::vector <Vec2d> candidats = {
             to.getPosition(),
@@ -178,18 +168,11 @@ void Collider::clamping(){
             return bestDirection;
         }
 
- /*   void Collider::move(Vec2d& dx){
-        Vec2d nouvellePosition(Position+dx); //Position+=dx;
-        Position=nouvellePosition;
-        clamping();
-
-    }
-*/
-    bool Collider::isColliding(Collider other){
+    bool Collider::isColliding(const Collider& other){
         bool retour(false);
         double rayonTotal(Rayon+other.getRadius());
         double distanceTotal;
-        distanceTotal= distance(Position,other.getPosition());
+        distanceTotal= distanceTo(other.getPosition());
         if (distanceTotal<rayonTotal)
             {retour= true;}
         else
@@ -199,7 +182,7 @@ void Collider::clamping(){
     bool Collider::operator|(Collider& body1){
         return isColliding(body1);
     }
-    std::ostream& operator<<(std::ostream& os, Collider body){
+    std::ostream& operator<<(std::ostream& os, const Collider& body){
          os<<"Collider: position = "<<body.getPosition()<<" radius = "<<body.getRadius();//<<std::endl;
          return os;
     }
