@@ -44,3 +44,7 @@ public:
      */
     void draw(sf::RenderTarget &targetWindow) const override;
 };
+
+    void Collider::setPosition(Vec2d position){
+        Position=position;
+    }
