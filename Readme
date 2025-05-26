@@ -1,18 +1,29 @@
+=====================================================================
 La simulation du desert permet de modéliser la vie dans animaux et l'évolution de l'environment.
-L'enviroment est constitué d'une température, nuages, flore et une faune.
-la flore est composé de catus et la faune est composée de lézards et scorpions.
+Dans notre projet, chaque entité biologique (comme les lézards, scorpions, cactus, etc.) est caractérisée par un ensemble de propriétés propres : énergie, espérance de vie, vitesse de déplacement, comportements (nourrissage, reproduction, etc.), et apparence (forme, couleur…).
+L’environnement simulé représente un désert sous forme d’un espace torique dans lequel évoluent différentes entités. Chaque entité peut interagir avec son environnement ou avec d'autres entités selon des règles précises. Par exemple :
+* les animaux perdent de l’énergie en se déplaçant, mais peuvent en récupérer en consommant de la nourriture (comme des cactus ou d’autres animaux) ;
+* certaines entités peuvent se reproduire ou mourir en fonction de leur âge ou de leur énergie ;
+* les interactions (collisions, prédation…) sont gérées par un système de détection;
+Le désert lui-même agit comme un milieu vivant, avec des sources d’énergie et des contraintes naturelles . Les entités y vivent, interagissent ou disparaissent au fil des cycles de simulation. Chaque cycle met à jour l’état de chaque entité (âge, énergie, position, etc.) et déclenche les actions correspondantes (mouvement, nutrition, reproduction ou mort).
 
-##Compilation et execution 
 
+##COMPILATION ET EXECUTION
+Ce projet utilise  [Cmake](https://cmake.org/) pour compiler
+* Dans QTCreator:
+       - mise en place du projet : ouvrir le fichier src/CmakeLists.txt
+       - choisir la cible à exécuter
 
 ##CIBLES PRINCIPALES 
 * application -> Application finale.
-* ppsTest -> predpredateur-proie simulation 
+* ppsTest -> predateur-proie simulation.
+* NeuronalTest -> permet de tester les lézards émetteurs d'ondes et senseurs.
+* EnvTest -> permet de tester la poursuite de cibles.
 
 ##FICHIERS DE CONFIGURATION 
-les fichiers de configuration qu'on a utilisé sont le pps.json
+Le fichier de configuration à utiliser est le app.json
 
 ##COMMANDES 
-les comandes pour l'utilisation sont les mêmes que sur le panneau à droite de la simulation. Exepté pour le contrôle de la température qu'on a changé à B pour descendre la température et M pour la monter.
+Les comandes pour l'utilisation sont les mêmes que sur le panneau à droite de la simulation. Exepté pour le contrôle de la température qu'on a changé à B pour descendre la température et M pour la monter.
 
-##Pas de modification
+##Pas de modification ni d'extension
