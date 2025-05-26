@@ -37,23 +37,23 @@ void Wave::setRayon(double rayon){
 
 double Wave::getIntensity() const {
     double e = Energie * std::exp(-Rayon / µ);
-    return e / (2 * PI * Rayon);
+    return e/ (2 * PI * Rayon);
 }
 
-bool Wave::containsAngle(const std::pair<double,double>& arc, double angle) {
+bool Wave::containsAngle(const std::pair<double,double>& arc, double angle) const{
     double start = arc.first;
     double end = arc.second;
 
     return (angle >= start) and (angle <= end);
 }
 
-    bool Wave::distanceToObstacle(const Vec2d& pos) {
+bool Wave::distanceToObstacle(const Vec2d& pos) const{
         double length = (pos - getPosition()).length();
         double r = Rayon;
         double marge = getAppConfig().wave_on_wave_marging;
 
         return (length >= r - marge && length <= r + marge);
-    }
+}
 
 void Wave::update(sf::Time dt) {
     Time += dt;
@@ -76,7 +76,6 @@ void Wave::update(sf::Time dt) {
                     erased = true;
                     break;
                 }
-
             }
             if (!erased) {
                 i += 1;
@@ -85,10 +84,6 @@ void Wave::update(sf::Time dt) {
                 arcs_changed=false;
             }
         }
-        //Arcs.erase(Arcs.begin(), Arcs.begin()+initial_size);
     }
     Rayon = RayonInitial + Vitesse * Time.asSeconds();
-  //  Arcs = newArcs;
-
-
 }
