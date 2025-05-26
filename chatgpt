@@ -1,25 +1,41 @@
-répartiton partie 3:
+#pragma once
+#include "Obstacle/Collider.hpp"
+#include "Random/Random.hpp"
+#include "Environment/Environment.hpp"
+#include <Utility/Vec2d.hpp>
 
-Paula; 3.2 et 3.5
+/*!
+ * @brief Représente un nuage dans l'environnement simulé.
+ *
+ * Un nuage est un type d'obstacle ayant une position et un rayon,
+ * et qui évolue dans le temps
+ */
+class Cloud : public Collider {
+public:
+    /*!
+     * @brief Constructeur du nuage.
+     *
+     * @param position Position initiale du centre du nuage.
+     * @param rayon Rayon du nuage (doit être >= 0).
+     */
+    Cloud(Vec2d position, double rayon);
 
-Nour: 3.3 et 3.4
+    /*!
+     * @brief Met à jour l'état du nuage à chaque pas de temps.
+     *
+     * @param dt Durée du pas de temps écoulé depuis la dernière mise à jour.
+     */
+    void update(sf::Time dt);
 
-répartition partie 4:
+    /*!
+     * @brief Destructeur du nuage.
+     */
+    virtual ~Cloud();
 
-Paula: 4.2
-
-Nour: 4.1
-
-OrganicEntity* Animal::bestEntity(std::list<OrganicEntity*> entities) {
-    OrganicEntity* retour;
-    double worldSize = getAppConfig().simulation_world_size;
-    double minDist(worldSize);
-    for (auto& entity : entities ){
-        double dist(this->distanceTo(entity->getPosition()));
-        if (dist< minDist){
-            minDist=dist;
-            retour = entity;
-        }
-    }
-    return retour;
-}
+    /*!
+     * @brief Dessine le nuage à l'écran.
+     *
+     * @param targetWindow Fenêtre de rendu dans laquelle le nuage doit être dessiné.
+     */
+    void draw(sf::RenderTarget &targetWindow) const override;
+};
