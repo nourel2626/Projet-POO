@@ -35,6 +35,11 @@ public:
     /*!
      * @brief Dessine le nuage à l'écran.
      *
+
+    void Collider::draw(sf::RenderTarget &targetWindow, sf::Color couleur) const{
+        targetWindow.draw(buildCircle(Position, Rayon, couleur));
+
+    }
      * @param targetWindow Fenêtre de rendu dans laquelle le nuage doit être dessiné.
      */
     void draw(sf::RenderTarget &targetWindow) const override;
