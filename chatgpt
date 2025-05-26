@@ -48,3 +48,4 @@ public:
     void Collider::setPosition(Vec2d position){
         Position=position;
     }
+       void setPosition(Vec2d position);
